@@ -4,7 +4,6 @@ import { Star, Gift, ShoppingBag, Clock } from "lucide-react";
 import { FLAVOURS, TOPPINGS, MOODS, AVATARS, STAMPS_TO_UNLOCK } from "./data/flavours.js";
 import { clamp, isTouchOnly } from "./data/utils.js";
 import useAudio from "./hooks/useAudio.js";
-import { sendOrderEmail } from "./hooks/useEmail.js";
 
 import FloatingEmojis from "./components/FloatingEmojis.jsx";
 import Confetti from "./components/Confetti.jsx";
@@ -168,9 +167,6 @@ export default function App() {
     setOrderHistory((h) => [...h, nr]);
     setConfetti(true);
     setTimeout(() => setConfetti(false), 3000);
-
-    // Silently email you the order
-    sendOrderEmail(nr);
 
     setCart({});
     setSelectedToppings([]);
