@@ -139,7 +139,7 @@ export default function AboutMobina({ isOpen, onToggle }) {
             direction: "rtl",
           }}
         >
-          چیزایی که یاد گرفتم و فراموش نمیکنم ✨
+          چیزایی که دربارت یاد گرفتم  ✨
         </p>
 
         {/* Category filter */}
