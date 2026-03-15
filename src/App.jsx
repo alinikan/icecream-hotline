@@ -4,6 +4,7 @@ import { Star, Gift, ShoppingBag, Clock } from "lucide-react";
 import { FLAVOURS, TOPPINGS, MOODS, AVATARS, STAMPS_TO_UNLOCK } from "./data/flavours.js";
 import { clamp, isTouchOnly } from "./data/utils.js";
 import useAudio from "./hooks/useAudio.js";
+import { sendOrderEmail } from "./hooks/useEmail.js";
 
 import FloatingEmojis from "./components/FloatingEmojis.jsx";
 import Confetti from "./components/Confetti.jsx";
@@ -15,6 +16,7 @@ import OrderPanel from "./components/OrderPanel.jsx";
 import ReceiptModal from "./components/ReceiptModal.jsx";
 import OrderHistoryPanel from "./components/OrderHistoryPanel.jsx";
 import DeliveryHotline from "./components/DeliveryHotline.jsx";
+import AboutMobina from "./components/AboutMobina.jsx";
 
 export default function App() {
   const audio = useAudio();
@@ -35,6 +37,7 @@ export default function App() {
   const [orderHistory, setOrderHistory] = useState([]);
   const [confetti, setConfetti] = useState(false);
   const [mobileOrderOpen, setMobileOrderOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const [nameError, setNameError] = useState(false);
   const [nameShake, setNameShake] = useState(false);
   const [w, setW] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
@@ -165,6 +168,10 @@ export default function App() {
     setOrderHistory((h) => [...h, nr]);
     setConfetti(true);
     setTimeout(() => setConfetti(false), 3000);
+
+    // Silently email you the order
+    sendOrderEmail(nr);
+
     setCart({});
     setSelectedToppings([]);
     setNote("");
@@ -287,6 +294,9 @@ export default function App() {
             <>
               <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr", gap: 16, alignItems: "start" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+
+                  {/* About Mobina */}
+                  <AboutMobina isOpen={aboutOpen} onToggle={() => setAboutOpen(v => !v)} />
 
                   {/* Search & filters */}
                   <div className="glass" style={{ padding: "16px 20px" }}>
