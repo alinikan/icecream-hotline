@@ -74,7 +74,16 @@ export default function AboutMobina({ isOpen, onToggle }) {
         <ChevronRight size={18} style={{ color: "var(--pink)", transition: "transform .2s" }} />
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <span style={{ fontSize: 15, fontWeight: 800, color: "#333" }}>درباره مبینا</span>
-          <span style={{ fontSize: 22 }}>🐥</span>
+          <img
+            src="/assets/mobina-sprite.png"
+            alt="Mobina"
+            style={{
+              width: 28,
+              height: "auto",
+              imageRendering: "pixelated",
+              animation: "idle-bounce 2s ease-in-out infinite",
+            }}
+          />
         </div>
       </button>
     );
@@ -117,7 +126,17 @@ export default function AboutMobina({ isOpen, onToggle }) {
           ✕ بستن
         </button>
 
-        <div style={{ fontSize: 44, marginBottom: 8 }}>🐥</div>
+        <img
+          src="/assets/mobina-sprite.png"
+          alt="Mobina"
+          style={{
+            width: 80,
+            height: "auto",
+            imageRendering: "pixelated",
+            animation: "idle-bounce 2s ease-in-out infinite",
+            marginBottom: 8,
+          }}
+        />
         <h2
           style={{
             fontFamily: "'Playfair Display', serif",
@@ -139,7 +158,7 @@ export default function AboutMobina({ isOpen, onToggle }) {
             direction: "rtl",
           }}
         >
-          چیزایی که دربارت یاد گرفتم  ✨
+          چیزایی که یاد گرفتم و فراموش نمیکنم ✨
         </p>
 
         {/* Category filter */}

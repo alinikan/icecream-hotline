@@ -39,6 +39,7 @@ export default function App() {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [nameError, setNameError] = useState(false);
   const [nameShake, setNameShake] = useState(false);
+  const [spriteJump, setSpriteJump] = useState(false);
   const [w, setW] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
   const isTouch = useMemo(() => isTouchOnly(), []);
   const name = "Mobina"; // Locked!
@@ -272,10 +273,31 @@ export default function App() {
                   </div>
                 </div>
 
-                <button className="btn btn-primary" onClick={() => { setScreen("shop"); audio.play(); }}
-                  style={{ width: "100%", marginTop: 24, padding: 14, fontSize: 16 }}>
-                  Let Me In! 🍦
-                </button>
+                <div style={{
+                  display: "flex", alignItems: "flex-end", gap: 12,
+                  marginTop: 24, justifyContent: "center",
+                }}>
+                  <img
+                    src="/assets/mobina-sprite.png"
+                    alt="Mobina"
+                    style={{
+                      width: 52,
+                      height: "auto",
+                      imageRendering: "pixelated",
+                      animation: spriteJump
+                        ? "sprite-jump 0.5s ease both"
+                        : "idle-bounce 2s ease-in-out infinite",
+                      flexShrink: 0,
+                    }}
+                  />
+                  <button className="btn btn-primary" onClick={() => {
+                    setSpriteJump(true);
+                    setTimeout(() => { setScreen("shop"); audio.play(); setSpriteJump(false); }, 600);
+                  }}
+                    style={{ flex: 1, padding: 14, fontSize: 16 }}>
+                    Let Me In! 🍦
+                  </button>
+                </div>
                 {!isTouch && (
                   <p style={{ fontSize: 11, color: "rgba(0,0,0,.35)", marginTop: 10 }}>
                     (psst — check your cursor, a legend is following you 😎)
