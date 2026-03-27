@@ -185,8 +185,6 @@ export default function App() {
       <Confetti active={confetti} />
       {screen === "shop" && <DJBooth audio={audio} isTouch={isTouch} />}
 
-      {screen === "shop" && <DailyFortune />}
-
       <div style={{ position: "relative", zIndex: 1, minHeight: "100vh" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "20px 14px" }}>
 
@@ -318,6 +316,9 @@ export default function App() {
             <>
               <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr", gap: 16, alignItems: "start" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+
+                  {/* Daily Fortune */}
+                  <DailyFortune />
 
                   {/* About Mobina */}
                   <AboutMobina isOpen={aboutOpen} onToggle={() => setAboutOpen(v => !v)} />

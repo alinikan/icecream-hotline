@@ -95,6 +95,11 @@ body {
   50% { transform: scale(1.06); box-shadow: 0 8px 28px rgba(255, 107, 138, .45); }
 }
 
+@keyframes fortune-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 /* ─── Utility classes ─── */
 .anim-fade-up { animation: fade-up .5s ease both; }
 .anim-pop { animation: pop-in .35s ease both; }
