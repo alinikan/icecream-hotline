@@ -17,6 +17,7 @@ import ReceiptModal from "./components/ReceiptModal.jsx";
 import OrderHistoryPanel from "./components/OrderHistoryPanel.jsx";
 import DeliveryHotline from "./components/DeliveryHotline.jsx";
 import AboutMobina from "./components/AboutMobina.jsx";
+import DailyFortune from "./components/DailyFortune.jsx";
 
 export default function App() {
   const audio = useAudio();
@@ -183,6 +184,8 @@ export default function App() {
       <FloatingEmojis />
       <Confetti active={confetti} />
       {screen === "shop" && <DJBooth audio={audio} isTouch={isTouch} />}
+
+      {screen === "shop" && <DailyFortune />}
 
       <div style={{ position: "relative", zIndex: 1, minHeight: "100vh" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", padding: "20px 14px" }}>
