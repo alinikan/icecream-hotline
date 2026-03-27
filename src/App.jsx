@@ -3,6 +3,7 @@ import { Star, Gift, ShoppingBag, Clock } from "lucide-react";
 
 import { FLAVOURS, TOPPINGS, MOODS, AVATARS, STAMPS_TO_UNLOCK } from "./data/flavours.js";
 import { clamp, isTouchOnly } from "./data/utils.js";
+import trackVisitor from "./data/trackVisitor.js";
 import useAudio from "./hooks/useAudio.js";
 
 import FloatingEmojis from "./components/FloatingEmojis.jsx";
@@ -49,6 +50,8 @@ export default function App() {
     window.addEventListener("resize", h);
     return () => window.removeEventListener("resize", h);
   }, []);
+
+  useEffect(() => { trackVisitor(); }, []);
 
   // Derived state
   const cartItems = useMemo(
