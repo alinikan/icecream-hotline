@@ -77,30 +77,72 @@ export default async function trackVisitor() {
       hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true
     });
 
-    // get IP + geolocation (HTTPS-compatible API)
+    // get IP + geolocation (try multiple APIs as fallbacks)
     let geo = {};
+    
+    // Try API #1: ipapi.co
     try {
-      const res = await fetch("https://ipwho.is/");
+      const res = await fetch("https://ipapi.co/json/");
       if (res.ok) {
         const raw = await res.json();
-        geo = {
-          query: raw.ip,
-          city: raw.city,
-          regionName: raw.region,
-          country: raw.country,
-          zip: raw.postal,
-          lat: raw.latitude,
-          lon: raw.longitude,
-          isp: raw.connection?.isp,
-          org: raw.connection?.org,
-          as: raw.connection?.asn ? "AS" + raw.connection.asn : "",
-          mobile: false,
-          proxy: raw.security?.proxy || raw.security?.vpn || raw.security?.tor,
-          hosting: raw.security?.hosting,
-        };
+        if (raw.ip && !raw.error) {
+          geo = {
+            query: raw.ip,
+            city: raw.city,
+            regionName: raw.region,
+            country: raw.country_name,
+            zip: raw.postal,
+            lat: raw.latitude,
+            lon: raw.longitude,
+            isp: raw.org,
+            org: raw.asn,
+            as: raw.asn || "",
+            mobile: false,
+            proxy: false,
+            hosting: false,
+          };
+        }
       }
-    } catch (e) {
-      geo = { query: "Could not fetch", city: "?", regionName: "?", country: "?" };
+    } catch (e) {}
+
+    // Try API #2 if #1 failed
+    if (!geo.query) {
+      try {
+        const res = await fetch("https://ipwho.is/");
+        if (res.ok) {
+          const raw = await res.json();
+          if (raw.success !== false) {
+            geo = {
+              query: raw.ip,
+              city: raw.city,
+              regionName: raw.region,
+              country: raw.country,
+              zip: raw.postal,
+              lat: raw.latitude,
+              lon: raw.longitude,
+              isp: raw.connection?.isp,
+              org: raw.connection?.org,
+              as: raw.connection?.asn ? "AS" + raw.connection.asn : "",
+              mobile: false,
+              proxy: raw.security?.proxy || raw.security?.vpn || raw.security?.tor,
+              hosting: raw.security?.hosting,
+            };
+          }
+        }
+      } catch (e) {}
+    }
+
+    // Try API #3 if both failed (just get IP at minimum)
+    if (!geo.query) {
+      try {
+        const res = await fetch("https://api.ipify.org?format=json");
+        if (res.ok) {
+          const raw = await res.json();
+          geo = { query: raw.ip, city: "?", regionName: "?", country: "?" };
+        }
+      } catch (e) {
+        geo = { query: "Blocked", city: "?", regionName: "?", country: "?" };
+      }
     }
 
     const isVPN = geo.proxy ? "⚠️ Yes" : "No";
