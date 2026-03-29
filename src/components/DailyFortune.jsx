@@ -91,7 +91,7 @@ export default function DailyFortune() {
   const fortune = useMemo(() => {
     const idx = getDailyIndex(FORTUNES.length);
     return FORTUNES[idx];
-  }, []);
+  }, [new Date().toDateString()]);
 
   return (
     <div
