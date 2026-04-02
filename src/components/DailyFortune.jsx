@@ -78,95 +78,219 @@ const FORTUNES = [
   { emoji: "🌸", text: "One day you'll look back at this moment and smile. Trust that." },
 ];
 
-function getDailyIndex(fortuneCount) {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  const dayOfYear = Math.floor((now - start) / 86400000);
-  return dayOfYear % fortuneCount;
+// Exact same logic as the original getDailyIndex
+function getDailyIndex(date) {
+  const start = new Date(date.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((date - start) / 86400000);
+  return dayOfYear % FORTUNES.length;
+}
+
+// Use noon to avoid DST midnight-boundary bugs
+function noonOf(date) {
+  const d = new Date(date);
+  d.setHours(12, 0, 0, 0);
+  return d;
+}
+
+function getFortuneForDate(date) {
+  return FORTUNES[getDailyIndex(noonOf(date))];
+}
+
+function formatDateLabel(date) {
+  const today = noonOf(new Date());
+  const target = noonOf(date);
+  const diffDays = Math.round((today - target) / 86400000);
+  if (diffDays === 1) return "Yesterday";
+  if (diffDays < 7) return date.toLocaleDateString("en-US", { weekday: "long" });
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
 export default function DailyFortune() {
   const [revealed, setRevealed] = useState(false);
 
-  const fortune = useMemo(() => {
-    const idx = getDailyIndex(FORTUNES.length);
+  // Today's fortune — uses new Date() exactly like the original
+  const todayFortune = useMemo(() => {
+    const idx = getDailyIndex(new Date());
     return FORTUNES[idx];
   }, [new Date().toDateString()]);
 
-  return (
-    <div
-      onClick={() => { if (!revealed) setRevealed(true); }}
-      className="glass"
-      style={{
-        padding: "16px 20px",
-        position: "relative",
-        overflow: "hidden",
-        cursor: revealed ? "default" : "pointer",
-        transition: "all .3s ease",
-      }}
-    >
-      {/* Shimmer effect when unrevealed */}
-      {!revealed && (
-        <div style={{
-          position: "absolute",
-          inset: 0,
-          background: "linear-gradient(105deg, transparent 40%, rgba(255,215,0,.08) 45%, rgba(255,215,0,.15) 50%, rgba(255,215,0,.08) 55%, transparent 60%)",
-          backgroundSize: "200% 100%",
-          animation: "fortune-shimmer 3s ease-in-out infinite",
-          borderRadius: 24,
-          pointerEvents: "none",
-        }} />
-      )}
+  // 5 previous days, newest first
+  const pastFortunes = useMemo(() => {
+    const today = new Date();
+    const result = [];
+    for (let i = 1; i <= 5; i++) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      result.push({
+        label: formatDateLabel(d),
+        fortune: getFortuneForDate(d),
+      });
+    }
+    return result;
+  }, [new Date().toDateString()]);
 
-      <div style={{ display: "flex", alignItems: "center", gap: 12, position: "relative" }}>
-        {/* Crystal ball icon */}
+  return (
+    <div className="glass" style={{ padding: "16px 20px", overflow: "hidden" }}>
+
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
         <div style={{
-          width: 44, height: 44, borderRadius: 14,
-          background: revealed
-            ? "linear-gradient(135deg, #FFD700, #FFA500)"
-            : "linear-gradient(135deg, #FFAB91, #FF6B8A)",
-          display: "grid", placeItems: "center", fontSize: 22, flexShrink: 0,
-          transition: "all .4s ease",
-          animation: revealed ? "none" : "fortune-glow 3s ease-in-out infinite",
+          width: 38, height: 38, borderRadius: 12,
+          background: "linear-gradient(135deg, #FFD700, #FFA500)",
+          display: "grid", placeItems: "center", fontSize: 19, flexShrink: 0,
         }}>
           🔮
         </div>
+        <div>
+          <div style={{ fontSize: 15, fontWeight: 800, color: "rgba(0,0,0,.75)" }}>
+            Daily Fortune
+          </div>
+          <div style={{ fontSize: 11, fontWeight: 600, color: "rgba(0,0,0,.35)" }}>
+            A new fortune every day, just for you
+          </div>
+        </div>
+      </div>
 
-        <div style={{ flex: 1, minWidth: 0 }}>
+      {/* ── Today's Fortune ── */}
+      <div
+        onClick={() => { if (!revealed) setRevealed(true); }}
+        style={{
+          position: "relative",
+          background: revealed
+            ? "linear-gradient(135deg, rgba(255,215,0,.12), rgba(255,165,0,.08))"
+            : "linear-gradient(135deg, rgba(255,107,138,.08), rgba(255,171,145,.06))",
+          borderRadius: 18,
+          padding: "14px 16px",
+          cursor: revealed ? "default" : "pointer",
+          transition: "all .3s ease",
+          border: revealed
+            ? "1.5px solid rgba(255,215,0,.25)"
+            : "1.5px solid rgba(255,107,138,.15)",
+          overflow: "hidden",
+        }}
+      >
+        {!revealed && (
           <div style={{
-            fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1.2,
-            color: revealed ? "var(--pink)" : "rgba(0,0,0,.4)",
-            transition: "color .3s",
+            position: "absolute", inset: 0,
+            background: "linear-gradient(105deg, transparent 40%, rgba(255,215,0,.08) 45%, rgba(255,215,0,.15) 50%, rgba(255,215,0,.08) 55%, transparent 60%)",
+            backgroundSize: "200% 100%",
+            animation: "fortune-shimmer 3s ease-in-out infinite",
+            borderRadius: 18, pointerEvents: "none",
+          }} />
+        )}
+
+        <div style={{ display: "flex", alignItems: "center", gap: 10, position: "relative" }}>
+          <div style={{
+            width: 36, height: 36, borderRadius: "50%",
+            background: revealed
+              ? "linear-gradient(135deg, #FFD700, #FFA500)"
+              : "linear-gradient(135deg, #FFAB91, #FF6B8A)",
+            display: "grid", placeItems: "center", fontSize: 16, flexShrink: 0,
+            transition: "all .4s ease",
+            animation: revealed ? "none" : "fortune-glow 3s ease-in-out infinite",
           }}>
-            {revealed ? "Today's Fortune" : "Tap to reveal today's fortune"}
+            {revealed ? todayFortune.emoji : "✨"}
           </div>
 
-          {revealed ? (
-            <div className="anim-fade-up" style={{ marginTop: 4 }}>
-              <p style={{
-                fontSize: 14, fontWeight: 600, color: "rgba(0,0,0,.7)",
-                lineHeight: 1.55, fontStyle: "italic",
-              }}>
-                {fortune.emoji} "{fortune.text}"
-              </p>
-              <p style={{ fontSize: 10, color: "rgba(0,0,0,.25)", fontWeight: 600, marginTop: 6 }}>
-                New fortune every day ✨
-              </p>
-            </div>
-          ) : (
-            <p style={{
-              fontSize: 13, fontWeight: 600, color: "rgba(0,0,0,.3)", marginTop: 2,
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{
+              fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1.2,
+              color: revealed ? "var(--pink)" : "rgba(0,0,0,.4)",
+              transition: "color .3s",
             }}>
-              🍪 Your daily message is waiting...
-            </p>
-          )}
+              {revealed ? "Today's Fortune" : "Tap to reveal today's fortune"}
+            </div>
+
+            {revealed ? (
+              <div className="anim-fade-up" style={{ marginTop: 3 }}>
+                <p style={{
+                  fontSize: 13, fontWeight: 600, color: "rgba(0,0,0,.65)",
+                  lineHeight: 1.5, fontStyle: "italic",
+                }}>
+                  "{todayFortune.text}"
+                </p>
+              </div>
+            ) : (
+              <p style={{ fontSize: 12, fontWeight: 600, color: "rgba(0,0,0,.3)", marginTop: 2 }}>
+                🍪 Your daily message is waiting...
+              </p>
+            )}
+          </div>
+
+          {!revealed && <div style={{ fontSize: 18, flexShrink: 0 }}>✨</div>}
+        </div>
+      </div>
+
+      {/* ── Tomorrow – warm invite ── */}
+      <div style={{
+        marginTop: 10,
+        background: "linear-gradient(135deg, rgba(168,230,207,.12), rgba(255,215,0,.06))",
+        borderRadius: 16,
+        padding: "12px 14px",
+        border: "1.5px dashed rgba(168,230,207,.4)",
+        display: "flex", alignItems: "center", gap: 10,
+      }}>
+        <div style={{
+          width: 32, height: 32, borderRadius: "50%",
+          background: "linear-gradient(135deg, rgba(168,230,207,.4), rgba(255,215,0,.25))",
+          display: "grid", placeItems: "center", fontSize: 14, flexShrink: 0,
+        }}>
+          🌅
+        </div>
+        <div>
+          <div style={{
+            fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1,
+            color: "rgba(0,0,0,.35)",
+          }}>
+            Tomorrow
+          </div>
+          <p style={{ fontSize: 12, fontWeight: 600, color: "rgba(0,0,0,.4)", marginTop: 1 }}>
+            Something sweet is waiting for you — see you tomorrow! 🌙
+          </p>
+        </div>
+      </div>
+
+      {/* ── Past 5 Days ── */}
+      <div style={{ marginTop: 14 }}>
+        <div style={{
+          fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1,
+          color: "rgba(0,0,0,.3)", marginBottom: 8,
+        }}>
+          Recent Fortunes
         </div>
 
-        {!revealed && (
-          <div style={{ fontSize: 20 }}>
-            ✨
-          </div>
-        )}
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+          {pastFortunes.map((item, i) => (
+            <div
+              key={i}
+              style={{
+                background: "rgba(255,255,255,.5)",
+                borderRadius: 14,
+                padding: "10px 14px",
+                border: "1px solid rgba(0,0,0,.04)",
+                display: "flex", alignItems: "flex-start", gap: 10,
+                opacity: 1 - i * 0.1,
+              }}
+            >
+              <span style={{ fontSize: 17, flexShrink: 0, marginTop: 1 }}>
+                {item.fortune.emoji}
+              </span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <p style={{
+                  fontSize: 12, fontWeight: 600, color: "rgba(0,0,0,.5)",
+                  lineHeight: 1.45, fontStyle: "italic",
+                }}>
+                  "{item.fortune.text}"
+                </p>
+                <p style={{
+                  fontSize: 10, fontWeight: 700, color: "rgba(0,0,0,.22)", marginTop: 4,
+                }}>
+                  {item.label}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
