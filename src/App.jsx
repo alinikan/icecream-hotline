@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Star, Gift, ShoppingBag, Clock } from "lucide-react";
 
+import RunawayQuestions from "./components/RunawayQuestions";
 import { FLAVOURS, TOPPINGS, MOODS, AVATARS, STAMPS_TO_UNLOCK } from "./data/flavours.js";
 import { clamp, isTouchOnly } from "./data/utils.js";
 import trackVisitor from "./data/trackVisitor.js";
@@ -323,6 +324,8 @@ export default function App() {
               <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr", gap: 16, alignItems: "start" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
+                  <RunawayQuestions />
+                  
                   {/* Daily Fortune */}
                   <DailyFortune />
 
