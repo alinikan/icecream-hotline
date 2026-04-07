@@ -52,8 +52,6 @@ export default function App() {
     return () => window.removeEventListener("resize", h);
   }, []);
 
-  useEffect(() => { trackVisitor(); }, []);
-
   // Derived state
   const cartItems = useMemo(
     () =>
@@ -294,11 +292,19 @@ export default function App() {
                       flexShrink: 0,
                     }}
                   />
-                  <button className="btn btn-primary" onClick={() => {
-                    setSpriteJump(true);
-                    setTimeout(() => { setScreen("shop"); audio.play(); setSpriteJump(false); }, 600);
-                  }}
-                    style={{ flex: 1, padding: 14, fontSize: 16 }}>
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => {
+                      setSpriteJump(true);
+                      setTimeout(() => {
+                        setScreen("shop");
+                        trackVisitor({ label: "Let Me In button" });
+                        audio.play();
+                        setSpriteJump(false);
+                      }, 600);
+                    }}
+                    style={{ flex: 1, padding: 14, fontSize: 16 }}
+                  >
                     Let Me In! 🍦
                   </button>
                 </div>
