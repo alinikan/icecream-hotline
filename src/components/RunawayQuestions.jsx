@@ -5,7 +5,7 @@ const QS = [
     q: "Is Mobina going to tell Ali more about herself?",
     yes: "Yes, obviously 🌸",
     no: "No way 🙅‍♀️",
-    win: "😬 Default Mobina wouldn't be proud.",
+    win: "Default Mobina wouldn't be proud.",
   },
   {
     q: "Is Mobina going out with Ali for a protein shake?",
@@ -27,8 +27,11 @@ const QS = [
   },
 ];
 
+// How close (px) a finger needs to get before the No button runs
+const TOUCH_FLEE_RADIUS = 90;
+
 function RunawayCard({ q }) {
-  const rowRef    = useRef(null);
+  const arenaRef  = useRef(null);
   const yesBtnRef = useRef(null);
   const noBtnRef  = useRef(null);
   const winRef    = useRef(null);
@@ -38,17 +41,17 @@ function RunawayCard({ q }) {
     curX: 0, curY: 0,
     tgtX: 0, tgtY: 0,
     raf: null,
+    isMobile: false,
   });
 
   const tick = useCallback(() => {
     const r   = st.current;
     const btn = noBtnRef.current;
     if (!btn) return;
-    r.curX += (r.tgtX - r.curX) * 0.14;
-    r.curY += (r.tgtY - r.curY) * 0.14;
-    btn.style.left = r.curX.toFixed(1) + "px";
-    btn.style.top  = r.curY.toFixed(1) + "px";
-    if (Math.abs(r.curX - r.tgtX) > 0.2 || Math.abs(r.curY - r.tgtY) > 0.2) {
+    r.curX += (r.tgtX - r.curX) * 0.13;
+    r.curY += (r.tgtY - r.curY) * 0.13;
+    btn.style.transform = `translate(${r.curX.toFixed(1)}px, ${r.curY.toFixed(1)}px)`;
+    if (Math.abs(r.curX - r.tgtX) > 0.3 || Math.abs(r.curY - r.tgtY) > 0.3) {
       r.raf = requestAnimationFrame(tick);
     } else {
       r.raf = null;
@@ -57,33 +60,35 @@ function RunawayCard({ q }) {
 
   const dodge = useCallback((clientX, clientY) => {
     const r      = st.current;
-    const row    = rowRef.current;
+    const arena  = arenaRef.current;
     const yesBtn = yesBtnRef.current;
     const noBtn  = noBtnRef.current;
-    if (r.answered || !row || !yesBtn || !noBtn) return;
+    if (r.answered || !arena || !yesBtn || !noBtn) return;
 
-    const rect = row.getBoundingClientRect();
-    const rw   = row.offsetWidth;
-    const rh   = row.offsetHeight;
-    const nw   = noBtn.offsetWidth  || 140;
+    const rect = arena.getBoundingClientRect();
+    const aw   = arena.offsetWidth;
+    const ah   = arena.offsetHeight;
+    const nw   = noBtn.offsetWidth  || 130;
     const nh   = noBtn.offsetHeight || 44;
     const mx   = clientX - rect.left;
     const my   = clientY - rect.top;
-    const yw   = yesBtn.offsetWidth;
 
-    const minX = yw + 10;
-    const maxX = rw - nw;
-    const minY = 0;
-    const maxY = Math.max(0, rh - nh);
-    if (maxX <= minX) return;
+    // No button can move freely across the full arena — not locked to right side
+    const pad  = 6;
+    const minX = pad;
+    const maxX = aw - nw - pad;
+    const minY = pad;
+    const maxY = ah - nh - pad;
+    if (maxX <= minX || maxY <= minY) return;
 
     let bx = r.tgtX, by = r.tgtY, best = -1;
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 40; i++) {
       const tx = minX + Math.random() * (maxX - minX);
-      const ty = minY + Math.random() * Math.max(1, maxY - minY);
+      const ty = minY + Math.random() * (maxY - minY);
       const dm = Math.hypot(tx + nw / 2 - mx, ty + nh / 2 - my);
       const dc = Math.hypot(tx - r.curX, ty - r.curY);
-      const sc = dm * 2 + dc * 0.4;
+      // Heavily prioritise distance from finger, secondarily avoid staying put
+      const sc = dm * 3 + dc * 0.3;
       if (sc > best) { best = sc; bx = tx; by = ty; }
     }
 
@@ -94,21 +99,23 @@ function RunawayCard({ q }) {
 
   useEffect(() => {
     const r      = st.current;
-    const row    = rowRef.current;
+    const arena  = arenaRef.current;
     const yesBtn = yesBtnRef.current;
     const noBtn  = noBtnRef.current;
     const winMsg = winRef.current;
-    if (!row || !yesBtn || !noBtn || !winMsg) return;
+    if (!arena || !yesBtn || !noBtn || !winMsg) return;
 
-    const isMobile = window.matchMedia("(pointer: coarse)").matches;
+    r.isMobile = window.matchMedia("(pointer: coarse)").matches;
 
+    // Place No button at bottom-right of arena initially
     const place = () => {
-      const rw = row.offsetWidth;
-      const nw = noBtn.offsetWidth || 140;
-      r.curX = r.tgtX = Math.max(0, rw - nw);
-      r.curY = r.tgtY = 0;
-      noBtn.style.left = r.curX + "px";
-      noBtn.style.top  = r.curY + "px";
+      const aw = arena.offsetWidth;
+      const ah = arena.offsetHeight;
+      const nw = noBtn.offsetWidth  || 130;
+      const nh = noBtn.offsetHeight || 44;
+      r.curX = r.tgtX = Math.max(0, aw - nw - 6);
+      r.curY = r.tgtY = Math.max(0, ah - nh - 6);
+      noBtn.style.transform = `translate(${r.curX}px, ${r.curY}px)`;
     };
 
     const onYes = () => {
@@ -124,27 +131,54 @@ function RunawayCard({ q }) {
       winMsg.style.display       = "block";
     };
 
-    const onMouseMove  = (e) => dodge(e.clientX, e.clientY);
+    // Desktop: dodge on mousemove over the No button
+    const onMouseMove = (e) => dodge(e.clientX, e.clientY);
+
+    // Mobile: track ALL touch movement on the document.
+    // If finger gets within TOUCH_FLEE_RADIUS of the No button, it runs.
+    const onTouchMove = (e) => {
+      if (r.answered) return;
+      const t     = e.touches[0];
+      const nRect = noBtn.getBoundingClientRect();
+      const cx    = nRect.left + nRect.width  / 2;
+      const cy    = nRect.top  + nRect.height / 2;
+      if (Math.hypot(t.clientX - cx, t.clientY - cy) < TOUCH_FLEE_RADIUS) {
+        dodge(t.clientX, t.clientY);
+      }
+    };
+
+    // Also dodge immediately on touchstart near the button
     const onTouchStart = (e) => {
-      e.preventDefault();
-      dodge(e.touches[0].clientX, e.touches[0].clientY);
+      if (r.answered) return;
+      const t     = e.touches[0];
+      const nRect = noBtn.getBoundingClientRect();
+      const cx    = nRect.left + nRect.width  / 2;
+      const cy    = nRect.top  + nRect.height / 2;
+      if (Math.hypot(t.clientX - cx, t.clientY - cy) < TOUCH_FLEE_RADIUS) {
+        e.preventDefault();
+        dodge(t.clientX, t.clientY);
+      }
     };
 
     yesBtn.addEventListener("click", onYes);
-    if (isMobile) {
-      noBtn.addEventListener("touchstart", onTouchStart, { passive: false });
+
+    if (r.isMobile) {
+      // Listen on document so we catch the finger before it lands on the button
+      document.addEventListener("touchmove",  onTouchMove,  { passive: true });
+      document.addEventListener("touchstart", onTouchStart, { passive: false });
     } else {
       noBtn.addEventListener("mousemove", onMouseMove);
     }
 
-    const tid = setTimeout(place, 60);
+    const tid = setTimeout(place, 80);
 
     return () => {
       clearTimeout(tid);
       if (r.raf) cancelAnimationFrame(r.raf);
       yesBtn.removeEventListener("click", onYes);
       noBtn.removeEventListener("mousemove", onMouseMove);
-      noBtn.removeEventListener("touchstart", onTouchStart);
+      document.removeEventListener("touchmove",  onTouchMove);
+      document.removeEventListener("touchstart", onTouchStart);
     };
   }, [dodge, q]);
 
@@ -157,24 +191,36 @@ function RunawayCard({ q }) {
       marginBottom: 10,
       boxShadow: "0 2px 12px rgba(255,107,138,0.08)",
     }}>
+      {/* Question text */}
       <p style={{
         fontSize: 14,
         fontWeight: 700,
         color: "#222",
         lineHeight: 1.55,
-        marginBottom: 14,
+        marginBottom: 12,
       }}>
         {q.q}
       </p>
 
-      <div ref={rowRef} style={{ position: "relative", height: 46 }}>
-        {/* YES — fixed left, never moves */}
+      {/*
+        Arena: tall enough for both buttons to have real room to dodge.
+        Yes sits top-left. No starts bottom-right and roams freely.
+      */}
+      <div
+        ref={arenaRef}
+        style={{
+          position: "relative",
+          width: "100%",
+          height: 104, // room for two 44px buttons with padding
+        }}
+      >
+        {/* YES — anchored top-left, never moves */}
         <button
           ref={yesBtnRef}
           style={{
             position: "absolute",
             left: 0,
-            top: 1,
+            top: 0,
             height: 44,
             padding: "0 20px",
             borderRadius: 14,
@@ -195,12 +241,13 @@ function RunawayCard({ q }) {
           {q.yes}
         </button>
 
-        {/* NO — starts right, glides away on hover/touch */}
+        {/* NO — starts bottom-right, glides away from finger */}
         <button
           ref={noBtnRef}
           style={{
             position: "absolute",
-            top: 1,
+            top: 0,
+            left: 0,
             height: 44,
             padding: "0 18px",
             borderRadius: 14,
@@ -214,17 +261,20 @@ function RunawayCard({ q }) {
             whiteSpace: "nowrap",
             zIndex: 3,
             WebkitTapHighlightColor: "transparent",
+            // Use transform for buttery-smooth GPU animation
+            willChange: "transform",
           }}
         >
           {q.no}
         </button>
       </div>
 
+      {/* Win message */}
       <div
         ref={winRef}
         style={{
           display: "none",
-          marginTop: 10,
+          marginTop: 8,
           fontSize: 12,
           fontWeight: 700,
           color: "#2E7D32",
@@ -253,14 +303,14 @@ export default function RunawayQuestions() {
           background: "linear-gradient(135deg, #FF6B8A, #FFAB91)",
           display: "grid", placeItems: "center", fontSize: 19, flexShrink: 0,
         }}>
-          🕵️
+          🌸
         </div>
         <div>
           <div style={{ fontSize: 15, fontWeight: 800, color: "rgba(0,0,0,.75)" }}>
             Just a few questions
           </div>
           <div style={{ fontSize: 11, fontWeight: 600, color: "rgba(0,0,0,.35)" }}>
-            The "No" button is totally clickable.
+            The "No" button is totally clickable. Allegedly.
           </div>
         </div>
       </div>
