@@ -2,28 +2,28 @@ import { useEffect, useRef, useCallback } from "react";
 
 const QS = [
   {
+    q: "Does Mobina think Ali knows too much?",
+    yes: "No! He should ask more questions 😌",
+    no: "Obviously 😡",
+    win: "✨ Then Ali will ask more questions ;)",
+  },
+  {
     q: "Is Mobina going to tell Ali more about herself?",
     yes: "Yes, obviously 🌸",
     no: "No way 🙅‍♀️",
-    win: "😬 Default Mobina wouldn't be proud.",
-  },
-  {
-    q: "Is Mobina going out with Ali for a protein shake?",
-    yes: "Yes, let's go 💪",
-    no: "Absolutely not 🚫",
-    win: "💪 Body Energy Club it is.",
-  },
-  {
-    q: "Does Mobina think this is the best website ever?",
-    yes: "Obviously yes ✨",
-    no: "Hmm, maybe not 🤔",
-    win: "✨ Correct answer.",
+    win: "😬 'Default Mobina' wouldn't be happy.",
   },
   {
     q: "Is Ali the nicest person to ever exist in the history of mankind?",
     yes: "Undeniably yes 🏆",
     no: "He's blocked 📵",
-    win: "🏆 You made Ali happy. Congrats.",
+    win: "🏆 You made Ali smile :)",
+  },
+  {
+    q: "Is Mobina going out with Ali for a protein shake?",
+    yes: "Yes, let's go 💪",
+    no: "Absolutely not 🚫",
+    win: "💪 See you at Body Energy Club.",
   },
 ];
 
