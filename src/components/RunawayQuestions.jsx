@@ -5,7 +5,7 @@ const QS = [
     q: "Is Mobina going to tell Ali more about herself?",
     yes: "Yes, obviously 🌸",
     no: "No way 🙅‍♀️",
-    win: "Default Mobina wouldn't be proud.",
+    win: "😬 Default Mobina wouldn't be proud.",
   },
   {
     q: "Is Mobina going out with Ali for a protein shake?",
@@ -303,14 +303,14 @@ export default function RunawayQuestions() {
           background: "linear-gradient(135deg, #FF6B8A, #FFAB91)",
           display: "grid", placeItems: "center", fontSize: 19, flexShrink: 0,
         }}>
-          🌸
+          🕵️
         </div>
         <div>
           <div style={{ fontSize: 15, fontWeight: 800, color: "rgba(0,0,0,.75)" }}>
             Just a few questions
           </div>
           <div style={{ fontSize: 11, fontWeight: 600, color: "rgba(0,0,0,.35)" }}>
-            The "No" button is totally clickable. Allegedly.
+            The "No" button is totally clickable.
           </div>
         </div>
       </div>
