@@ -1,4 +1,5 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { ChevronRight } from "lucide-react";
 
 const QS = [
   {
@@ -27,7 +28,6 @@ const QS = [
   },
 ];
 
-// How close (px) a finger needs to get before the No button runs
 const TOUCH_FLEE_RADIUS = 90;
 
 function RunawayCard({ q }) {
@@ -59,11 +59,10 @@ function RunawayCard({ q }) {
   }, []);
 
   const dodge = useCallback((clientX, clientY) => {
-    const r      = st.current;
-    const arena  = arenaRef.current;
-    const yesBtn = yesBtnRef.current;
-    const noBtn  = noBtnRef.current;
-    if (r.answered || !arena || !yesBtn || !noBtn) return;
+    const r     = st.current;
+    const arena = arenaRef.current;
+    const noBtn = noBtnRef.current;
+    if (r.answered || !arena || !noBtn) return;
 
     const rect = arena.getBoundingClientRect();
     const aw   = arena.offsetWidth;
@@ -73,7 +72,6 @@ function RunawayCard({ q }) {
     const mx   = clientX - rect.left;
     const my   = clientY - rect.top;
 
-    // No button can move freely across the full arena — not locked to right side
     const pad  = 6;
     const minX = pad;
     const maxX = aw - nw - pad;
@@ -87,7 +85,6 @@ function RunawayCard({ q }) {
       const ty = minY + Math.random() * (maxY - minY);
       const dm = Math.hypot(tx + nw / 2 - mx, ty + nh / 2 - my);
       const dc = Math.hypot(tx - r.curX, ty - r.curY);
-      // Heavily prioritise distance from finger, secondarily avoid staying put
       const sc = dm * 3 + dc * 0.3;
       if (sc > best) { best = sc; bx = tx; by = ty; }
     }
@@ -107,7 +104,6 @@ function RunawayCard({ q }) {
 
     r.isMobile = window.matchMedia("(pointer: coarse)").matches;
 
-    // Place No button at bottom-right of arena initially
     const place = () => {
       const aw = arena.offsetWidth;
       const ah = arena.offsetHeight;
@@ -131,11 +127,8 @@ function RunawayCard({ q }) {
       winMsg.style.display       = "block";
     };
 
-    // Desktop: dodge on mousemove over the No button
     const onMouseMove = (e) => dodge(e.clientX, e.clientY);
 
-    // Mobile: track ALL touch movement on the document.
-    // If finger gets within TOUCH_FLEE_RADIUS of the No button, it runs.
     const onTouchMove = (e) => {
       if (r.answered) return;
       const t     = e.touches[0];
@@ -147,7 +140,6 @@ function RunawayCard({ q }) {
       }
     };
 
-    // Also dodge immediately on touchstart near the button
     const onTouchStart = (e) => {
       if (r.answered) return;
       const t     = e.touches[0];
@@ -161,9 +153,7 @@ function RunawayCard({ q }) {
     };
 
     yesBtn.addEventListener("click", onYes);
-
     if (r.isMobile) {
-      // Listen on document so we catch the finger before it lands on the button
       document.addEventListener("touchmove",  onTouchMove,  { passive: true });
       document.addEventListener("touchstart", onTouchStart, { passive: false });
     } else {
@@ -191,7 +181,6 @@ function RunawayCard({ q }) {
       marginBottom: 10,
       boxShadow: "0 2px 12px rgba(255,107,138,0.08)",
     }}>
-      {/* Question text */}
       <p style={{
         fontSize: 14,
         fontWeight: 700,
@@ -202,37 +191,16 @@ function RunawayCard({ q }) {
         {q.q}
       </p>
 
-      {/*
-        Arena: tall enough for both buttons to have real room to dodge.
-        Yes sits top-left. No starts bottom-right and roams freely.
-      */}
-      <div
-        ref={arenaRef}
-        style={{
-          position: "relative",
-          width: "100%",
-          height: 104, // room for two 44px buttons with padding
-        }}
-      >
-        {/* YES — anchored top-left, never moves */}
+      <div ref={arenaRef} style={{ position: "relative", width: "100%", height: 104 }}>
         <button
           ref={yesBtnRef}
           style={{
-            position: "absolute",
-            left: 0,
-            top: 0,
-            height: 44,
-            padding: "0 20px",
-            borderRadius: 14,
-            border: "none",
+            position: "absolute", left: 0, top: 0,
+            height: 44, padding: "0 20px", borderRadius: 14, border: "none",
             background: "linear-gradient(135deg, #FF6B8A, #FF8FA3)",
-            color: "#fff",
-            fontFamily: "'Quicksand', sans-serif",
-            fontSize: 14,
-            fontWeight: 800,
-            cursor: "pointer",
-            whiteSpace: "nowrap",
-            zIndex: 2,
+            color: "#fff", fontFamily: "'Quicksand', sans-serif",
+            fontSize: 14, fontWeight: 800, cursor: "pointer",
+            whiteSpace: "nowrap", zIndex: 2,
             boxShadow: "0 4px 14px rgba(255,107,138,.25)",
             WebkitTapHighlightColor: "transparent",
             transition: "background 0.25s, box-shadow 0.25s",
@@ -241,27 +209,16 @@ function RunawayCard({ q }) {
           {q.yes}
         </button>
 
-        {/* NO — starts bottom-right, glides away from finger */}
         <button
           ref={noBtnRef}
           style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            height: 44,
-            padding: "0 18px",
-            borderRadius: 14,
-            border: "1.5px solid #DDD",
-            background: "#F2F2F2",
-            color: "#444",
-            fontFamily: "'Quicksand', sans-serif",
-            fontSize: 14,
-            fontWeight: 700,
-            cursor: "pointer",
-            whiteSpace: "nowrap",
-            zIndex: 3,
+            position: "absolute", top: 0, left: 0,
+            height: 44, padding: "0 18px", borderRadius: 14,
+            border: "1.5px solid #DDD", background: "#F2F2F2",
+            color: "#444", fontFamily: "'Quicksand', sans-serif",
+            fontSize: 14, fontWeight: 700, cursor: "pointer",
+            whiteSpace: "nowrap", zIndex: 3,
             WebkitTapHighlightColor: "transparent",
-            // Use transform for buttery-smooth GPU animation
             willChange: "transform",
           }}
         >
@@ -269,55 +226,122 @@ function RunawayCard({ q }) {
         </button>
       </div>
 
-      {/* Win message */}
       <div
         ref={winRef}
         style={{
-          display: "none",
-          marginTop: 8,
-          fontSize: 12,
-          fontWeight: 700,
-          color: "#2E7D32",
-          lineHeight: 1.5,
+          display: "none", marginTop: 8,
+          fontSize: 12, fontWeight: 700,
+          color: "#2E7D32", lineHeight: 1.5,
         }}
       />
     </div>
   );
 }
 
-export default function RunawayQuestions() {
+export default function RunawayQuestions({ isOpen, onToggle }) {
+  // Collapsed pill — same style as AboutMobina closed state
+  if (!isOpen) {
+    return (
+      <button
+        onClick={onToggle}
+        className="glass"
+        style={{
+          width: "100%",
+          padding: "16px 22px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          border: "1.5px solid rgba(255,160,185,.3)",
+          background: "rgba(255,220,230,.75)",
+          textAlign: "left",
+          cursor: "pointer",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{
+            width: 34, height: 34, borderRadius: 10,
+            background: "linear-gradient(135deg, #FF6B8A, #FFAB91)",
+            display: "grid", placeItems: "center", fontSize: 17, flexShrink: 0,
+          }}>
+            🕵️
+          </div>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 800, color: "rgba(0,0,0,.75)" }}>
+              Just a few questions
+            </div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: "rgba(0,0,0,.4)" }}>
+              The "No" button is totally clickable. Allegedly.
+            </div>
+          </div>
+        </div>
+        <ChevronRight
+          size={18}
+          style={{ color: "var(--pink)", flexShrink: 0, transition: "transform .2s" }}
+        />
+      </button>
+    );
+  }
+
+  // Expanded panel
   return (
     <div
-      className="glass"
+      className="anim-fade-up"
       style={{
-        padding: "16px 20px",
-        background: "rgba(255, 220, 230, 0.65)",
-        border: "1px solid rgba(255, 160, 185, 0.4)",
+        borderRadius: 24,
         overflow: "hidden",
+        border: "1.5px solid rgba(255,160,185,.3)",
+        background: "rgba(255,220,230,.65)",
+        boxShadow: "0 8px 32px rgba(255,107,138,.08)",
       }}
     >
-      {/* Header — same pattern as DailyFortune */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-        <div style={{
-          width: 38, height: 38, borderRadius: 12,
-          background: "linear-gradient(135deg, #FF6B8A, #FFAB91)",
-          display: "grid", placeItems: "center", fontSize: 19, flexShrink: 0,
-        }}>
-          🕵️
-        </div>
-        <div>
-          <div style={{ fontSize: 15, fontWeight: 800, color: "rgba(0,0,0,.75)" }}>
-            Just a few questions
+      {/* Header with close button */}
+      <div style={{
+        padding: "18px 20px 14px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{
+            width: 38, height: 38, borderRadius: 12,
+            background: "linear-gradient(135deg, #FF6B8A, #FFAB91)",
+            display: "grid", placeItems: "center", fontSize: 19, flexShrink: 0,
+          }}>
+            🕵️
           </div>
-          <div style={{ fontSize: 11, fontWeight: 600, color: "rgba(0,0,0,.35)" }}>
-            The "No" button is totally clickable.
+          <div>
+            <div style={{ fontSize: 15, fontWeight: 800, color: "rgba(0,0,0,.75)" }}>
+              Just a few questions
+            </div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: "rgba(0,0,0,.35)" }}>
+              The "No" button is totally clickable. Allegedly.
+            </div>
           </div>
         </div>
+        <button
+          onClick={onToggle}
+          style={{
+            background: "rgba(255,255,255,.6)",
+            border: "1px solid rgba(0,0,0,.06)",
+            borderRadius: 12,
+            padding: "6px 12px",
+            fontSize: 12,
+            fontWeight: 700,
+            color: "#888",
+            cursor: "pointer",
+            flexShrink: 0,
+          }}
+        >
+          ✕ Close
+        </button>
       </div>
 
-      {QS.map((q, i) => (
-        <RunawayCard key={i} q={q} />
-      ))}
+      {/* Cards */}
+      <div style={{ padding: "0 16px 20px" }}>
+        {QS.map((q, i) => (
+          <RunawayCard key={i} q={q} />
+        ))}
+      </div>
     </div>
   );
 }

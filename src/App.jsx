@@ -40,6 +40,7 @@ export default function App() {
   const [confetti, setConfetti] = useState(false);
   const [mobileOrderOpen, setMobileOrderOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [questionsOpen, setQuestionsOpen] = useState(false);
   const [nameError, setNameError] = useState(false);
   const [nameShake, setNameShake] = useState(false);
   const [spriteJump, setSpriteJump] = useState(false);
@@ -324,7 +325,7 @@ export default function App() {
               <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr", gap: 16, alignItems: "start" }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
-                  <RunawayQuestions />
+                  <RunawayQuestions isOpen={questionsOpen} onToggle={() => setQuestionsOpen(v => !v)} />
                   
                   {/* Daily Fortune */}
                   <DailyFortune />
