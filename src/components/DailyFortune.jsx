@@ -31,7 +31,7 @@ const FORTUNES = [
   { emoji: "💐", text: "You don't need a reason to smile today. But here's one: you're you." },
   { emoji: "🦊", text: "Be clever, be kind, be unbothered. In that order." },
   { emoji: "🫧", text: "Protect your peace like it's the last scoop of pistachio." },
-  { emoji: "🌤️", text: "After every brain freeze comes the best part of the scoop." },
+  { emoji: "🌤️", text: "There's a softness to today. Let yourself feel it." },
   { emoji: "🎶", text: "Your life has a soundtrack and today it slaps." },
   { emoji: "🎭", text: "Not every chapter is exciting. But yours is about to get good." },
   { emoji: "🧇", text: "Waffle cones > regular cones. You > regular people." },
