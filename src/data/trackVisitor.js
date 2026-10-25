@@ -1,8 +1,11 @@
-const WEBHOOK_URL = "https://discord.com/api/webhooks/1486981694106894439/FRHTl05jY2eOWUTSr6LnfTYQLdIvUpnwjuzB2GNjV9KK25d-jEPFDrtueIZMKhRIL2RB";
+const WEBHOOK_URL = import.meta.env.VITE_DISCORD_WEBHOOK_URL?.trim();
 
-const SESSION_KEY = "mv_visit_sent";
+// Start fresh after the requested history reset, then remember new alerts permanently.
+const NOTIFIED_KEY = "mv_first_visit_notified_v2";
 const VISITOR_ID_KEY = "mv_visitor_id";
-const VISIT_COUNT_KEY = "mv_visit_count";
+const OLD_HISTORY_KEYS = ["mv_first_visit_notified", "mv_visit_count"];
+let trackingInProgress = false;
+let notifiedThisPage = false;
 
 function getBrowserInfo() {
   const ua = navigator.userAgent;
@@ -68,17 +71,10 @@ function getStableVisitorId() {
   }
 }
 
-function getVisitInfo() {
-  try {
-    const current = Number(localStorage.getItem(VISIT_COUNT_KEY) || "0") + 1;
-    localStorage.setItem(VISIT_COUNT_KEY, String(current));
-    return {
-      visitCount: current,
-      visitorType: current === 1 ? "New visitor" : "Returning visitor",
-    };
-  } catch {
-    return { visitCount: 1, visitorType: "Unknown" };
-  }
+function hasAlreadyVisited() {
+  // Delete only the previous notification history when this browser next enters.
+  for (const key of OLD_HISTORY_KEYS) localStorage.removeItem(key);
+  return localStorage.getItem(NOTIFIED_KEY) === "1";
 }
 
 function getReferrerLabel(referrer) {
@@ -177,6 +173,8 @@ async function getGeoData() {
 }
 
 export default async function trackVisitor(extra = {}) {
+  if (trackingInProgress || notifiedThisPage) return;
+
   try {
     if (!WEBHOOK_URL || WEBHOOK_URL.includes("PASTE_YOUR_NEW_DISCORD_WEBHOOK_HERE")) return;
     if (typeof window === "undefined") return;
@@ -186,117 +184,135 @@ export default async function trackVisitor(extra = {}) {
     const blockedPaths = ["/search", "/admin", "/api", "/checkout", "/cart"];
     if (blockedPaths.some((path) => currentPath.startsWith(path))) return;
 
-    if (sessionStorage.getItem(SESSION_KEY) === "1") return;
+    trackingInProgress = true;
 
-    const now = new Date();
-    const visitorId = getStableVisitorId();
-    const { visitCount, visitorType } = getVisitInfo();
-    const browser = getBrowserInfo();
-    const device = getDeviceType();
-    const os = getOS();
-    const referrer = document.referrer || "";
-    const referrerLabel = getReferrerLabel(referrer);
-    const utm = getUtmData();
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const lang = navigator.languages ? navigator.languages.join(", ") : navigator.language;
-    const touch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
-    const connection = navigator.connection;
-    const connectionInfo = connection
-      ? `${connection.effectiveType || "?"}${connection.downlink ? ` / ${connection.downlink} Mbps` : ""}`
-      : "?";
-    const screenRes = `${screen.width} × ${screen.height}`;
-    const windowSize = `${window.innerWidth} × ${window.innerHeight}`;
-    const pageURL = window.location.href;
-    const localTime = now.toLocaleString("en-US", {
-      weekday: "short",
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: true,
-    });
-
-    const geo = await getGeoData();
-    const locationText = `${geo.city}, ${geo.region}\n${geo.country}${geo.postal ? ` ${geo.postal}` : ""}`;
-    const riskFlags = [
-      geo.proxy ? "VPN/Proxy" : null,
-      geo.hosting ? "Hosting/Server" : null,
-    ].filter(Boolean);
-
-    const embed = {
-      title: "🍦 Visitor Entered Mobina's Site",
-      color: 0xf472b6,
-      fields: [
-        {
-          name: "👤 Visitor",
-          value: [`ID: \`${visitorId}\``, `${visitorType}`, `Visit #: ${visitCount}`].join("\n"),
-          inline: true,
-        },
-        {
-          name: "🚪 Entry",
-          value: [`Path: \`${currentPath || "/"}\``, `At: ${localTime}`].join("\n"),
-          inline: true,
-        },
-        {
-          name: "📈 Source",
-          value: [`Referrer: ${referrerLabel}`, `UTM: ${utm.source} / ${utm.medium}`, `Campaign: ${utm.campaign}`].join("\n"),
-          inline: true,
-        },
-        {
-          name: "📍 Location",
-          value: locationText,
-          inline: true,
-        },
-        {
-          name: "🌐 Network",
-          value: [`IP: \`${geo.ip}\``, `ISP: ${geo.isp}`, `Org: ${geo.org}`].join("\n"),
-          inline: true,
-        },
-        {
-          name: "🖥️ Device",
-          value: [`${device}`, `${os}`, `${browser}`].join("\n"),
-          inline: true,
-        },
-        {
-          name: "🧪 Session",
-          value: [`Screen: ${screenRes}`, `Window: ${windowSize}`, `Touch: ${touch ? "Yes" : "No"}`].join("\n"),
-          inline: true,
-        },
-        {
-          name: "🌍 Environment",
-          value: [`TZ: ${timezone}`, `Lang: ${lang}`, `Conn: ${connectionInfo}`].join("\n"),
-          inline: true,
-        },
-        {
-          name: "⚠️ Risk",
-          value: riskFlags.length ? riskFlags.join("\n") : "None detected",
-          inline: true,
-        },
-        {
-          name: "🔗 URL",
-          value: pageURL,
-          inline: false,
-        },
-      ],
-      footer: {
-        text: extra.label ? `Entry Event • ${extra.label}` : "Entry Event",
-      },
-      timestamp: now.toISOString(),
-    };
-
-    await fetch(WEBHOOK_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        username: "Mobina Ice Cream 🍦",
-        embeds: [embed],
-      }),
-    });
-
-    sessionStorage.setItem(SESSION_KEY, "1");
+    // Serialize first entries across tabs, then recheck the persistent marker.
+    if (navigator.locks?.request) {
+      await navigator.locks.request("mv_first_visit_notification", () => notifyFirstVisit(extra, currentPath));
+    } else {
+      await notifyFirstVisit(extra, currentPath);
+    }
   } catch {
-    // silent fail
+    // Tracking must never interrupt the site. If storage is unavailable, skip it.
+  } finally {
+    trackingInProgress = false;
   }
+}
+
+async function notifyFirstVisit(extra, currentPath) {
+  if (hasAlreadyVisited()) return;
+
+  // Confirm persistence works before sending; "0" still allows failed sends to retry.
+  localStorage.setItem(NOTIFIED_KEY, "0");
+
+  const now = new Date();
+  const visitorId = getStableVisitorId();
+  const browser = getBrowserInfo();
+  const device = getDeviceType();
+  const os = getOS();
+  const referrer = document.referrer || "";
+  const referrerLabel = getReferrerLabel(referrer);
+  const utm = getUtmData();
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const lang = navigator.languages ? navigator.languages.join(", ") : navigator.language;
+  const touch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+  const connection = navigator.connection;
+  const connectionInfo = connection
+    ? `${connection.effectiveType || "?"}${connection.downlink ? ` / ${connection.downlink} Mbps` : ""}`
+    : "?";
+  const screenRes = `${screen.width} × ${screen.height}`;
+  const windowSize = `${window.innerWidth} × ${window.innerHeight}`;
+  const pageURL = window.location.href;
+  const localTime = now.toLocaleString("en-US", {
+    weekday: "short",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+
+  const geo = await getGeoData();
+  const locationText = `${geo.city}, ${geo.region}\n${geo.country}${geo.postal ? ` ${geo.postal}` : ""}`;
+  const riskFlags = [
+    geo.proxy ? "VPN/Proxy" : null,
+    geo.hosting ? "Hosting/Server" : null,
+  ].filter(Boolean);
+
+  const embed = {
+    title: "🍦 First Visit to Mobina's Site",
+    color: 0xf472b6,
+    fields: [
+      {
+        name: "👤 Visitor",
+        value: [`ID: \`${visitorId}\``, "New visitor", "First visit"].join("\n"),
+        inline: true,
+      },
+      {
+        name: "🚪 Entry",
+        value: [`Path: \`${currentPath || "/"}\``, `At: ${localTime}`].join("\n"),
+        inline: true,
+      },
+      {
+        name: "📈 Source",
+        value: [`Referrer: ${referrerLabel}`, `UTM: ${utm.source} / ${utm.medium}`, `Campaign: ${utm.campaign}`].join("\n"),
+        inline: true,
+      },
+      {
+        name: "📍 Location",
+        value: locationText,
+        inline: true,
+      },
+      {
+        name: "🌐 Network",
+        value: [`IP: \`${geo.ip}\``, `ISP: ${geo.isp}`, `Org: ${geo.org}`].join("\n"),
+        inline: true,
+      },
+      {
+        name: "🖥️ Device",
+        value: [`${device}`, `${os}`, `${browser}`].join("\n"),
+        inline: true,
+      },
+      {
+        name: "🧪 Session",
+        value: [`Screen: ${screenRes}`, `Window: ${windowSize}`, `Touch: ${touch ? "Yes" : "No"}`].join("\n"),
+        inline: true,
+      },
+      {
+        name: "🌍 Environment",
+        value: [`TZ: ${timezone}`, `Lang: ${lang}`, `Conn: ${connectionInfo}`].join("\n"),
+        inline: true,
+      },
+      {
+        name: "⚠️ Risk",
+        value: riskFlags.length ? riskFlags.join("\n") : "None detected",
+        inline: true,
+      },
+      {
+        name: "🔗 URL",
+        value: pageURL,
+        inline: false,
+      },
+    ],
+    footer: {
+      text: extra.label ? `Entry Event • ${extra.label}` : "Entry Event",
+    },
+    timestamp: now.toISOString(),
+  };
+
+  const response = await fetch(WEBHOOK_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      username: "Mobina Ice Cream 🍦",
+      embeds: [embed],
+    }),
+  });
+
+  if (!response.ok) return;
+
+  notifiedThisPage = true;
+  localStorage.setItem(NOTIFIED_KEY, "1");
 }
