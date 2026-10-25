@@ -139,15 +139,9 @@ export default function SundaeStudio({
           <span className="eyebrow">
             <span className="section-number">01</span> THE SUNDAE STUDIO
           </span>
-          <h2>
-            A little scoop of <em>you.</em>
-          </h2>
+          <h2>Mix your own sundae.</h2>
         </div>
-        <p>
-          Pick your favourites. Make a beautiful mess.
-          <br />
-          There are absolutely no wrong answers.
-        </p>
+        <p>Drag a flavour into the cup, or tap to add it.</p>
       </div>
       <div className="studio-layout">
         <div className="creation-column">
@@ -198,7 +192,7 @@ export default function SundaeStudio({
             {!scoops.length && (
               <div className="empty-stage-message">
                 <ArrowDown size={18} />
-                <span>Your masterpiece starts with a scoop.</span>
+                <span>Add a scoop to start building.</span>
               </div>
             )}
             <AnimatePresence>
@@ -306,11 +300,11 @@ export default function SundaeStudio({
             disabled={!scoops.length}
           >
             <span>
-              <span className="eyebrow">YOUR LITTLE MASTERPIECE</span>
+              <span className="eyebrow">YOUR 3D CREATION</span>
               <strong>
                 {scoops.length
-                  ? `${scoops.length} scoop${scoops.length === 1 ? "" : "s"}, endless possibilities`
-                  : "A cup full of possibilities"}
+                  ? "Add to my order"
+                  : "Pick a flavour to get started"}
               </strong>
             </span>
             <span className="order-price">

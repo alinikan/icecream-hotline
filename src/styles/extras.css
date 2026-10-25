@@ -1,0 +1,2083 @@
+:where(.hotline-extras, .dialog-backdrop) .eyebrow {
+  font-size: 10px;
+  letter-spacing: 1.9px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+:where(.hotline-extras, .dialog-backdrop) .tiny-muted {
+  font-size: 11px;
+  color: var(--muted);
+}
+:where(.hotline-extras, .dialog-backdrop) .section-anchor {
+  scroll-margin-top: 24px;
+}
+:where(.hotline-extras, .dialog-backdrop) .primary-button,
+:where(.hotline-extras, .dialog-backdrop) .secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  border-radius: 999px;
+  padding: 17px 25px;
+  font-size: 13px;
+  font-weight: 600;
+  min-height: 50px;
+}
+:where(.hotline-extras, .dialog-backdrop) .primary-button {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+:where(.hotline-extras, .dialog-backdrop) .primary-button:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+:where(.hotline-extras, .dialog-backdrop) .secondary-button {
+  background: var(--soft);
+  border: 1px solid var(--line);
+}
+:where(.hotline-extras, .dialog-backdrop) .text-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  background: none;
+  padding: 6px 0;
+  font-size: 12px;
+  font-weight: 500;
+  border-bottom: 1px solid transparent;
+}
+:where(.hotline-extras, .dialog-backdrop) .text-button:hover {
+  border-color: currentColor;
+}
+:where(.hotline-extras, .dialog-backdrop) .icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: transparent;
+}
+:where(.hotline-extras, .dialog-backdrop) .icon-button:hover,
+:where(.hotline-extras, .dialog-backdrop) .icon-button.is-active {
+  background: var(--soft);
+}
+:where(.hotline-extras, .dialog-backdrop) .three-scene {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+:where(.hotline-extras, .dialog-backdrop) .three-scene canvas {
+  display: block;
+  max-width: 100%;
+}
+:where(.hotline-extras, .dialog-backdrop) .mascot-compact .mascot-button {
+  width: 120px;
+}
+:where(.hotline-extras, .dialog-backdrop) .mascot-button {
+  display: block;
+  background: none;
+  padding: 0;
+  width: 160px;
+  flex-shrink: 0;
+  outline-offset: 0;
+}
+:where(.hotline-extras, .dialog-backdrop) .mascot-button svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+:where(.hotline-extras, .dialog-backdrop) .mascot-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+:where(.hotline-extras, .dialog-backdrop) .mascot-copy {
+  max-width: 180px;
+}
+:where(.hotline-extras, .dialog-backdrop) .mascot-copy .eyebrow {
+  font-size: 8px;
+}
+:where(.hotline-extras, .dialog-backdrop) .mascot-copy p {
+  font-family: "Playfair Display", serif;
+  font-size: 23px;
+  line-height: 1.15;
+  letter-spacing: -0.7px;
+  margin: 8px 0 12px;
+}
+:where(.hotline-extras, .dialog-backdrop) .mascot-copy .tiny-muted {
+  font-size: 9px;
+}
+:where(.hotline-extras, .dialog-backdrop) .studio-section,
+:where(.hotline-extras, .dialog-backdrop) .arcade-section {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 76px 60px 78px;
+}
+:where(.hotline-extras, .dialog-backdrop) .section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+  margin-bottom: 36px;
+}
+:where(.hotline-extras, .dialog-backdrop) .section-number {
+  font-size: 8px;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  margin-right: 9px;
+  letter-spacing: 0;
+}
+:where(.hotline-extras, .dialog-backdrop) .section-heading h2 {
+  font-size: 48px;
+  line-height: 1.1;
+  margin-top: 15px;
+}
+:where(.hotline-extras, .dialog-backdrop) .section-heading h2 em {
+  color: var(--accent);
+}
+:where(.hotline-extras, .dialog-backdrop) .section-heading > p,
+:where(.hotline-extras, .dialog-backdrop) .section-heading > div > p {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.8;
+  padding-bottom: 2px;
+}
+:where(.hotline-extras, .dialog-backdrop) .studio-layout {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.88fr) minmax(0, 1.12fr);
+  gap: 56px;
+  align-items: start;
+}
+:where(.hotline-extras, .dialog-backdrop) .creation-column {
+  position: sticky;
+  top: 24px;
+  min-width: 0;
+}
+:where(.hotline-extras, .dialog-backdrop) .creation-stage {
+  position: relative;
+  aspect-ratio: 1/1.08;
+  min-height: 410px;
+  border-radius: 24px;
+  background:
+    radial-gradient(ellipse at 50% 38%, var(--paper), transparent 75%),
+    linear-gradient(150deg, var(--soft), var(--stage));
+  border: 1px solid var(--line);
+  isolation: isolate;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s,
+    background 0.8s;
+  overflow: hidden;
+}
+:where(.hotline-extras, .dialog-backdrop) .creation-stage.drop-ready {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+:where(.hotline-extras, .dialog-backdrop) .stage-topline,
+:where(.hotline-extras, .dialog-backdrop) .stage-bottomline {
+  position: absolute;
+  left: 23px;
+  right: 23px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 4;
+}
+:where(.hotline-extras, .dialog-backdrop) .stage-topline {
+  top: 20px;
+}
+:where(.hotline-extras, .dialog-backdrop) .stage-topline .text-button {
+  font-size: 9px;
+}
+:where(.hotline-extras, .dialog-backdrop) .stage-bottomline {
+  bottom: 18px;
+  font-size: 9px;
+  color: var(--muted);
+}
+:where(.hotline-extras, .dialog-backdrop) .stage-bottomline .icon-button {
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--ink) 14%, transparent);
+  width: 30px;
+  height: 30px;
+}
+:where(.hotline-extras, .dialog-backdrop) .live-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 7px;
+  letter-spacing: 1.5px;
+}
+:where(.hotline-extras, .dialog-backdrop) .live-pill i {
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+:where(.hotline-extras, .dialog-backdrop) .stage-orbit {
+  position: absolute;
+  left: 15%;
+  right: 15%;
+  top: 16%;
+  bottom: 16%;
+  border: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
+  border-radius: 50%;
+  transform: rotate(-25deg);
+}
+:where(.hotline-extras, .dialog-backdrop) .stage-orbit.orbit-two {
+  left: 7%;
+  right: 7%;
+  top: 24%;
+  bottom: 24%;
+  transform: rotate(25deg);
+}
+:where(.hotline-extras, .dialog-backdrop) .creation-stage .three-scene {
+  inset: 15px -15px 10px;
+}
+:where(.hotline-extras, .dialog-backdrop) .empty-stage-message {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 24%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 12px;
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-size: 14px;
+  pointer-events: none;
+}
+:where(.hotline-extras, .dialog-backdrop) .empty-stage-message svg {
+  transform: rotate(180deg);
+}
+:where(.hotline-extras, .dialog-backdrop) .rotation-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 55%;
+  margin: 16px auto 20px;
+  color: var(--muted);
+}
+:where(.hotline-extras, .dialog-backdrop) .rotation-control input {
+  width: 100%;
+  height: 3px;
+  border: 0;
+}
+:where(.hotline-extras, .dialog-backdrop) .container-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 7px;
+}
+:where(.hotline-extras, .dialog-backdrop) .container-picker > button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 5px;
+  background: var(--paper);
+  min-height: 43px;
+}
+:where(.hotline-extras, .dialog-backdrop) .container-picker > button.selected {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 5%, var(--paper));
+}
+:where(.hotline-extras, .dialog-backdrop) .container-doodle {
+  width: 12px;
+  height: 14px;
+  border: 1px solid currentColor;
+  border-radius: 2px 2px 5px 5px;
+  display: inline-block;
+  transform: perspective(15px) rotateX(-15deg);
+}
+:where(.hotline-extras, .dialog-backdrop) .container-doodle.cone,
+:where(.hotline-extras, .dialog-backdrop) .container-doodle.waffle {
+  clip-path: polygon(0 0, 100% 0, 55% 100%, 45% 100%);
+  border: 0;
+  background: currentColor;
+  opacity: 0.6;
+}
+:where(.hotline-extras, .dialog-backdrop) .container-doodle.waffle {
+  background:
+    repeating-linear-gradient(45deg, transparent 0 2px, currentColor 3px 4px),
+    repeating-linear-gradient(-45deg, transparent 0 2px, currentColor 3px 4px);
+}
+:where(.hotline-extras, .dialog-backdrop) .scoop-stack-list {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 17px;
+}
+:where(.hotline-extras, .dialog-backdrop) .scoop-stack-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  background: none;
+  border-radius: 99px;
+  padding: 6px 9px;
+  font-size: 9px;
+}
+:where(.hotline-extras, .dialog-backdrop) .scoop-stack-item > span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+:where(.hotline-extras, .dialog-backdrop) .order-summary-button {
+  margin-top: 20px;
+  padding: 19px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: none;
+}
+:where(.hotline-extras, .dialog-backdrop) .order-summary-button .eyebrow {
+  font-size: 7px;
+  letter-spacing: 1.4px;
+  color: var(--muted);
+}
+:where(.hotline-extras, .dialog-backdrop) .order-summary-button strong {
+  display: block;
+  font-family: "Playfair Display", serif;
+  font-weight: 500;
+  font-size: 17px;
+  letter-spacing: -0.7px;
+  margin-top: 5px;
+}
+:where(.hotline-extras, .dialog-backdrop) .order-price {
+  font-size: 23px;
+  font-family: "Playfair Display", serif;
+  white-space: nowrap;
+}
+:where(.hotline-extras, .dialog-backdrop) .order-price > span {
+  display: block;
+  font-family: "Quicksand", sans-serif;
+  font-size: 8px;
+  color: var(--muted);
+  margin-top: 3px;
+  text-align: right;
+}
+:where(.hotline-extras, .dialog-backdrop) .ingredient-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+:where(.hotline-extras, .dialog-backdrop) .ingredient-heading .eyebrow {
+  color: var(--muted);
+  font-size: 8px;
+}
+:where(.hotline-extras, .dialog-backdrop) .ingredient-heading h3 {
+  font-size: 29px;
+  line-height: 1.2;
+  margin-top: 4px;
+}
+:where(.hotline-extras, .dialog-backdrop) .ingredient-heading .text-button {
+  font-size: 10px;
+}
+:where(.hotline-extras, .dialog-backdrop) .category-tabs {
+  display: flex;
+  gap: 5px;
+  margin: 22px 0 18px;
+  border-bottom: 1px solid var(--line);
+  overflow: auto;
+}
+:where(.hotline-extras, .dialog-backdrop) .category-tabs > button {
+  font-size: 10px;
+  background: none;
+  padding: 10px 12px 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+}
+:where(.hotline-extras, .dialog-backdrop) .category-tabs > button:first-child {
+  padding-left: 0;
+}
+:where(.hotline-extras, .dialog-backdrop) .category-tabs > button.selected {
+  border-color: var(--accent);
+  color: var(--ink);
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-tray {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-tile {
+  position: relative;
+  min-width: 0;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  border-radius: 11px;
+  transition: border-color 0.2s;
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-tile:hover {
+  border-color: var(--accent);
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-heart {
+  position: absolute;
+  right: 7px;
+  top: 6px;
+  z-index: 3;
+  font-size: 19px;
+  line-height: 1;
+  padding: 3px;
+  background: none;
+  color: var(--muted);
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-heart.saved {
+  color: var(--accent);
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-add {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  padding: 17px 12px 10px;
+  background: none;
+  border-radius: 10px;
+  text-align: left;
+  touch-action: none;
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-scoop-art {
+  position: relative;
+  width: 62px;
+  height: 54px;
+  display: block;
+  align-self: center;
+  margin: 5px 0 13px;
+  border-radius: 48% 52% 44% 47%/55% 55% 40% 40%;
+  background:
+    radial-gradient(ellipse at 28% 20%, #ffffff70, transparent 65%),
+    radial-gradient(circle at 72% 80%, #543d2920, transparent 65%), var(--scoop);
+  box-shadow:
+    inset -4px -5px 9px #58402c17,
+    inset 2px 1px 5px #ffffff40,
+    0 9px 7px -8px #422c2b55;
+  transform: rotate(-7deg);
+  pointer-events: none;
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-scoop-art:after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  opacity: 0.22;
+  background-image: radial-gradient(#fff 1px, transparent 1.5px);
+  background-size: 5px 5px;
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-scoop-art i {
+  display: none;
+  position: absolute;
+  width: 4px;
+  height: 3px;
+  border-radius: 1px;
+  background: #61403399;
+  left: 20%;
+  top: 30%;
+  transform: rotate(30deg);
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-scoop-art i:nth-child(2) {
+  left: 55%;
+  top: 45%;
+  transform: rotate(-20deg);
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-scoop-art i:nth-child(3) {
+  left: 40%;
+  top: 73%;
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-scoop-art i:nth-child(4) {
+  left: 75%;
+  top: 65%;
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-scoop-art i:nth-child(5) {
+  left: 60%;
+  top: 19%;
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-cookies i,
+:where(.hotline-extras, .dialog-backdrop) .flavour-mint i,
+:where(.hotline-extras, .dialog-backdrop) .flavour-choc i,
+:where(.hotline-extras, .dialog-backdrop) .flavour-rocky i,
+:where(.hotline-extras, .dialog-backdrop) .flavour-cake i,
+:where(.hotline-extras, .dialog-backdrop) .flavour-legendary i {
+  display: block;
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-cake i:nth-child(even) {
+  background: #a578ba;
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-cake i:nth-child(odd) {
+  background: #a0b676;
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-name {
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.35;
+  min-height: 27px;
+  letter-spacing: -0.2px;
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  font-size: 9px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-plus {
+  width: 21px;
+  height: 21px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--ink);
+}
+:where(.hotline-extras, .dialog-backdrop) .empty-favorites {
+  grid-column: 1/-1;
+  font-size: 12px;
+  color: var(--muted);
+  padding: 35px;
+  text-align: center;
+}
+:where(.hotline-extras, .dialog-backdrop) .toppings-section {
+  border-top: 1px solid var(--line);
+  padding-top: 25px;
+  margin-top: 28px;
+}
+:where(.hotline-extras, .dialog-backdrop) .toppings-section .tiny-muted {
+  font-size: 9px;
+}
+:where(.hotline-extras, .dialog-backdrop) .topping-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 20px;
+}
+:where(.hotline-extras, .dialog-backdrop) .topping-options > button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: var(--paper);
+  padding: 9px 11px;
+}
+:where(.hotline-extras, .dialog-backdrop) .topping-options > button > span {
+  font-size: 13px;
+}
+:where(.hotline-extras, .dialog-backdrop) .topping-options > button.selected {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-topping-hint,
+:where(.hotline-extras, .dialog-backdrop) .arcade-topping {
+  margin-top: 19px;
+  font-size: 9px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  line-height: 1.7;
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-topping {
+  border: 1px dashed var(--accent);
+  background: transparent;
+  padding: 12px;
+  border-radius: 8px;
+  width: 100%;
+  color: var(--accent);
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-topping > span {
+  margin-left: auto;
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-topping.selected {
+  background: var(--soft);
+}
+:where(.hotline-extras, .dialog-backdrop) .topping-shower {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  overflow: hidden;
+}
+:where(.hotline-extras, .dialog-backdrop) .topping-shower > span {
+  position: absolute;
+  top: 10%;
+  left: 48%;
+  font-size: 29px;
+  transform: rotate(-35deg);
+}
+:where(.hotline-extras, .dialog-backdrop) .topping-shower > i {
+  position: absolute;
+  top: 19%;
+  left: calc(30% + var(--i) * 2.8%);
+  width: 4px;
+  height: 10px;
+  background: var(--shower-colour);
+  border-radius: 3px;
+  animation: shower 0.7s ease-in calc(var(--i) * 0.025s) both;
+}
+:where(.hotline-extras, .dialog-backdrop) .topping-shower.is-sauce > i {
+  width: 5px;
+  height: 35px;
+  left: calc(40% + var(--i) * 1.2%);
+}
+:where(.hotline-extras, .dialog-backdrop) .sundae-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding-top: 45px;
+  pointer-events: none;
+}
+:where(.hotline-extras, .dialog-backdrop) .fallback-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+:where(.hotline-extras, .dialog-backdrop) .fallback-scoop {
+  display: block;
+  width: 110px;
+  height: 94px;
+  border-radius: 46% 48% 44% 43%;
+  margin-bottom: -32px;
+  box-shadow:
+    inset -7px -5px 15px #563e2c25,
+    2px 6px 10px #563e2c0c;
+  position: relative;
+  transform: rotate(-7deg);
+}
+:where(.hotline-extras, .dialog-backdrop) .fallback-scoop:nth-child(even) {
+  transform: rotate(9deg);
+}
+:where(.hotline-extras, .dialog-backdrop) .fallback-container {
+  background: linear-gradient(100deg, #e28670, #f09c80, #d7735e);
+  width: 150px;
+  height: 105px;
+  clip-path: polygon(0 0, 100% 0, 84% 100%, 16% 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #653f32;
+  text-align: center;
+  z-index: 3;
+  border-top: 7px solid #fff2d4;
+}
+:where(.hotline-extras, .dialog-backdrop) .fallback-container > span {
+  padding: 8px;
+  background: #fff8e6;
+  font-family: Georgia, serif;
+  font-size: 11px;
+  line-height: 1.2;
+}
+:where(.hotline-extras, .dialog-backdrop) .fallback-container b {
+  font-size: 15px;
+}
+:where(.hotline-extras, .dialog-backdrop) .fallback-container.cone,
+:where(.hotline-extras, .dialog-backdrop) .fallback-container.waffle {
+  height: 140px;
+  clip-path: polygon(0 0, 100% 0, 55% 100%, 45% 100%);
+  background:
+    repeating-linear-gradient(45deg, #c99259 0 2px, transparent 3px 13px),
+    repeating-linear-gradient(-45deg, #c99259 0 2px, #e4b87c 3px 13px);
+  border: 0;
+}
+:where(.hotline-extras, .dialog-backdrop) .fallback-container.cone > span,
+:where(.hotline-extras, .dialog-backdrop) .fallback-container.waffle > span {
+  display: none;
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-section {
+  padding-top: 76px;
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-reward-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  margin-top: 14px;
+  color: var(--muted);
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-reward-note.unlocked {
+  color: var(--accent);
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-card {
+  padding: 25px;
+  border-radius: 18px;
+  text-align: left;
+  color: #4c4038;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-card.peach {
+  background: #f1dfcb;
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-card.sage {
+  background: #e0e5d1;
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-card.lavender {
+  background: #e5ddec;
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-card .eyebrow {
+  font-size: 8px;
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-card-arrow {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #4a3e3a33;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-illustration {
+  position: relative;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-card h3 {
+  font-size: 31px;
+  margin: 8px 0 12px;
+  color: #49382f;
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-card > p {
+  font-size: 11px;
+  line-height: 1.8;
+  color: #7d6f65;
+  min-height: 60px;
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-card-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid #4a3e3a20;
+  margin-top: 25px;
+  padding-top: 16px;
+  font-size: 10px;
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-card-bottom > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+:where(.hotline-extras, .dialog-backdrop)
+  .arcade-card-bottom
+  > span:last-child {
+  font-size: 8px;
+  color: #7a6b63;
+}
+.dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  background: #211b244d;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow: auto;
+}
+:where(.hotline-extras, .dialog-backdrop) .dialog-panel {
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100dvh - 48px);
+  overflow: auto;
+  padding: 28px 32px 32px;
+  outline: none;
+  box-shadow: 0 30px 100px #14101d26;
+}
+:where(.hotline-extras, .dialog-backdrop) .dialog-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+:where(.hotline-extras, .dialog-backdrop) .dialog-top > .eyebrow {
+  font-size: 8px;
+  color: var(--muted);
+}
+:where(.hotline-extras, .dialog-backdrop) .dialog-panel h2 {
+  font-size: 36px;
+  line-height: 1.15;
+  margin-top: 10px;
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-dialog {
+  max-width: 640px;
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-dialog-heading .eyebrow {
+  font-size: 8px;
+  color: var(--muted);
+}
+:where(.hotline-extras, .dialog-backdrop) .arcade-dialog-heading h2 {
+  font-size: 38px;
+}
+:where(.hotline-extras, .dialog-backdrop) .game-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  gap: 15px;
+  margin: 22px 0 15px;
+}
+:where(.hotline-extras, .dialog-backdrop) .game-stats b {
+  font-size: 15px;
+  font-weight: 600;
+}
+:where(.hotline-extras, .dialog-backdrop) .game-arena {
+  position: relative;
+  height: 370px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  isolation: isolate;
+}
+:where(.hotline-extras, .dialog-backdrop) .game-background-word {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: "Playfair Display", serif;
+  font-style: italic;
+  font-size: 100px;
+  color: var(--ink);
+  opacity: 0.035;
+  pointer-events: none;
+}
+:where(.hotline-extras, .dialog-backdrop) .catch-arena {
+  touch-action: none;
+}
+:where(.hotline-extras, .dialog-backdrop) .falling-scoop {
+  position: absolute;
+  width: 29px;
+  height: 27px;
+  border-radius: 48% 50% 43% 42%;
+  transform: translate(-50%, -50%);
+  box-shadow:
+    inset -3px -2px 5px #3f2e2625,
+    0 2px 4px #3f2e2610;
+  will-change: top;
+}
+:where(.hotline-extras, .dialog-backdrop) .catch-basket {
+  position: absolute;
+  bottom: 7%;
+  width: 78px;
+  height: 55px;
+  background: #dc8b76;
+  border-top: 5px solid #f9e9d0;
+  border-radius: 3px 3px 18px 18px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff7e7;
+  font-family: "Playfair Display", serif;
+  font-size: 10px;
+  letter-spacing: 1px;
+  box-shadow: 0 5px 8px #3f2e2610;
+}
+:where(.hotline-extras, .dialog-backdrop) .game-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: color-mix(in srgb, var(--paper) 97%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 28px;
+}
+:where(.hotline-extras, .dialog-backdrop) .game-intro-icon {
+  font-size: 50px;
+  font-family: Georgia, serif;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 18px;
+}
+:where(.hotline-extras, .dialog-backdrop) .game-overlay > p {
+  font-size: 12px;
+  line-height: 1.8;
+  max-width: 340px;
+  color: var(--muted);
+  margin: 0 0 23px;
+}
+:where(.hotline-extras, .dialog-backdrop) .game-overlay > .primary-button {
+  font-size: 12px;
+  padding: 14px 23px;
+  min-height: 45px;
+}
+:where(.hotline-extras, .dialog-backdrop) .game-result-icon {
+  font-size: 33px;
+  color: var(--accent);
+  line-height: 1;
+  margin-bottom: 12px;
+}
+:where(.hotline-extras, .dialog-backdrop) .game-result > .eyebrow {
+  font-size: 8px;
+}
+:where(.hotline-extras, .dialog-backdrop) .game-result h3 {
+  font-size: 27px;
+  margin: 7px 0 10px;
+  line-height: 1.1;
+}
+:where(.hotline-extras, .dialog-backdrop) .game-result > p {
+  font-size: 10px;
+  margin-bottom: 12px;
+  max-width: 320px;
+}
+:where(.hotline-extras, .dialog-backdrop) .game-result-score {
+  font-family: "Playfair Display", serif;
+  font-size: 38px;
+  font-weight: 500;
+  margin-bottom: 15px;
+  line-height: 1;
+}
+:where(.hotline-extras, .dialog-backdrop) .game-result-score > span {
+  display: block;
+  font-family: "Quicksand", sans-serif;
+  font-size: 7px;
+  letter-spacing: 2px;
+  margin-top: 7px;
+  color: var(--muted);
+}
+:where(.hotline-extras, .dialog-backdrop) .game-instructions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 9px;
+  color: var(--muted);
+  margin-top: 15px;
+  gap: 15px;
+  min-height: 40px;
+}
+:where(.hotline-extras, .dialog-backdrop) .game-instructions > div {
+  display: flex;
+  gap: 7px;
+}
+:where(.hotline-extras, .dialog-backdrop) .game-instructions .small {
+  padding: 10px 16px;
+  min-height: 38px;
+  font-size: 10px;
+}
+:where(.hotline-extras, .dialog-backdrop) .matching-arena {
+  height: 370px;
+  padding: 23px;
+}
+:where(.hotline-extras, .dialog-backdrop) .memory-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  height: 100%;
+  gap: 10px;
+}
+:where(.hotline-extras, .dialog-backdrop) .memory-card {
+  position: relative;
+  background: transparent;
+  padding: 0;
+  border-radius: 9px;
+  perspective: 600px;
+  opacity: 1 !important;
+}
+:where(.hotline-extras, .dialog-backdrop) .memory-card > span {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  backface-visibility: hidden;
+  border-radius: 9px;
+  transition: transform 0.35s;
+}
+:where(.hotline-extras, .dialog-backdrop) .memory-card-back {
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 30px;
+  font-family: Georgia, serif;
+  border: 1px solid color-mix(in srgb, var(--ink) 15%, transparent);
+  transform: rotateY(0);
+}
+:where(.hotline-extras, .dialog-backdrop) .memory-card-back:after {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid currentColor;
+  border-radius: 5px;
+  opacity: 0.25;
+}
+:where(.hotline-extras, .dialog-backdrop) .memory-card-face {
+  background: var(--paper);
+  font-size: 30px;
+  border: 1px solid var(--line);
+  transform: rotateY(180deg);
+}
+:where(.hotline-extras, .dialog-backdrop)
+  .memory-card.flipped
+  .memory-card-back {
+  transform: rotateY(-180deg);
+}
+:where(.hotline-extras, .dialog-backdrop)
+  .memory-card.flipped
+  .memory-card-face {
+  transform: rotateY(0);
+}
+:where(.hotline-extras, .dialog-backdrop)
+  .memory-card.matched
+  .memory-card-face {
+  background: color-mix(in srgb, var(--accent) 9%, var(--paper));
+  border-color: var(--accent);
+}
+:where(.hotline-extras, .dialog-backdrop) .balance-scoop {
+  position: absolute;
+  width: 68px;
+  height: 45px;
+  transform: translateX(-50%);
+  border-radius: 48% 49% 43% 41%;
+  box-shadow: inset -4px -3px 6px #4b2c2720;
+  z-index: 2;
+  will-change: left;
+}
+:where(.hotline-extras, .dialog-backdrop) .balance-cup {
+  position: absolute;
+  width: 85px;
+  height: 49px;
+  bottom: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #dc8b76;
+  border-top: 5px solid #fff3df;
+  border-radius: 0 0 20px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff3e0;
+  font-size: 10px;
+  font-family: Georgia, serif;
+  letter-spacing: 1px;
+}
+:where(.hotline-extras, .dialog-backdrop) .balance-target {
+  position: absolute;
+  width: 90px;
+  height: 9px;
+  border: 1px dashed var(--accent);
+  opacity: 0.6;
+  transform: translate(-50%, -37px);
+  border-radius: 50%;
+  z-index: 1;
+}
+:where(.hotline-extras, .dialog-backdrop) .balance-scoop.topple {
+  animation: topple 0.7s ease-in calc(var(--layer) * 0.06s) forwards;
+}
+:where(.hotline-extras, .dialog-backdrop) .moving-scoop {
+  z-index: 3;
+}
+@keyframes shower {
+  0% {
+    transform: translateY(-30px) rotate(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(280px) rotate(220deg);
+    opacity: 0;
+  }
+}
+@keyframes topple {
+  to {
+    transform: translate(65px, 200px) rotate(90deg);
+    opacity: 0;
+  }
+}
+@media (max-width: 1200px) {
+  :where(.hotline-extras, .dialog-backdrop) .studio-section,
+  :where(.hotline-extras, .dialog-backdrop) .arcade-section {
+    padding-left: 35px;
+    padding-right: 35px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .studio-layout {
+    gap: 32px;
+    grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1.1fr);
+  }
+  :where(.hotline-extras, .dialog-backdrop) .flavour-tray {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  :where(.hotline-extras, .dialog-backdrop) .mascot-copy p {
+    font-size: 20px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-card {
+    padding: 22px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-card h3 {
+    font-size: 27px;
+  }
+}
+@media (max-width: 960px) {
+  :where(.hotline-extras, .dialog-backdrop) .mascot-compact .mascot-button {
+    width: 100px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .section-heading h2 {
+    font-size: 41px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .section-heading > p,
+  :where(.hotline-extras, .dialog-backdrop) .section-heading > div > p {
+    font-size: 11px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .studio-layout {
+    gap: 26px;
+    grid-template-columns: minmax(280px, 0.88fr) minmax(0, 1.12fr);
+  }
+  :where(.hotline-extras, .dialog-backdrop) .flavour-tray {
+    gap: 7px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .flavour-add {
+    padding: 15px 9px 9px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .flavour-scoop-art {
+    width: 51px;
+    height: 46px;
+    margin-bottom: 11px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .flavour-name {
+    font-size: 9px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .creation-stage {
+    min-height: 370px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .stage-topline,
+  :where(.hotline-extras, .dialog-backdrop) .stage-bottomline {
+    left: 15px;
+    right: 15px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .stage-topline .text-button {
+    font-size: 8px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .live-pill {
+    font-size: 6px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .container-picker > button {
+    font-size: 8px;
+    gap: 5px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .container-picker svg {
+    display: none;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .order-summary-button strong {
+    font-size: 14px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .order-price {
+    font-size: 20px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .order-summary-button .eyebrow {
+    font-size: 6px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .ingredient-heading h3 {
+    font-size: 26px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .ingredient-heading .text-button {
+    font-size: 9px;
+    gap: 5px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .toppings-section .tiny-muted {
+    display: none;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .category-tabs > button {
+    font-size: 9px;
+    padding: 9px 8px 11px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .topping-options {
+    gap: 6px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .topping-options > button {
+    font-size: 8px;
+    padding: 8px 9px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .mascot-copy p {
+    font-size: 20px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-cards {
+    gap: 14px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-card {
+    padding: 18px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-card h3 {
+    font-size: 24px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-card > p {
+    font-size: 10px;
+    min-height: 75px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-card-bottom {
+    margin-top: 17px;
+    font-size: 9px;
+  }
+  :where(.hotline-extras, .dialog-backdrop)
+    .arcade-card-bottom
+    > span:last-child {
+    font-size: 7px;
+    gap: 4px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-card .eyebrow {
+    font-size: 7px;
+    letter-spacing: 1.3px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-illustration {
+    height: 150px;
+  }
+}
+@media (max-width: 760px) {
+  :where(.hotline-extras, .dialog-backdrop) .mascot-compact .mascot-button {
+    width: 105px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .studio-section,
+  :where(.hotline-extras, .dialog-backdrop) .arcade-section {
+    padding: 49px 25px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .section-heading h2 {
+    font-size: 42px;
+    margin-top: 12px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .section-heading > p,
+  :where(.hotline-extras, .dialog-backdrop) .section-heading > div > p {
+    font-size: 11px;
+    line-height: 1.7;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .section-heading > p > br {
+    display: none;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .section-heading .eyebrow {
+    font-size: 8px;
+    letter-spacing: 1.4px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .section-number {
+    width: 21px;
+    height: 21px;
+    margin-right: 7px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .studio-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .creation-column {
+    position: relative;
+    top: auto;
+    width: 100%;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .creation-stage {
+    aspect-ratio: 1/1.05;
+    min-height: 380px;
+    max-height: 520px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .stage-topline,
+  :where(.hotline-extras, .dialog-backdrop) .stage-bottomline {
+    left: 20px;
+    right: 20px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .live-pill {
+    font-size: 7px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .stage-topline .text-button {
+    font-size: 9px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .stage-bottomline {
+    font-size: 9px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .container-picker > button {
+    font-size: 10px;
+    padding: 12px 8px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .container-picker svg {
+    display: block;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .container-picker {
+    gap: 8px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .order-summary-button strong {
+    font-size: 17px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .order-summary-button .eyebrow {
+    font-size: 7px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .order-price {
+    font-size: 24px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .ingredients-column {
+    width: 100%;
+    min-width: 0;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .ingredient-heading h3 {
+    font-size: 29px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .ingredient-heading .text-button {
+    font-size: 10px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .category-tabs {
+    margin-top: 18px;
+    margin-bottom: 17px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .category-tabs > button {
+    font-size: 10px;
+    padding: 10px 13px 12px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .flavour-tray {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 9px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .flavour-add {
+    padding: 18px 11px 11px;
+    touch-action: pan-y;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .flavour-scoop-art {
+    width: 65px;
+    height: 56px;
+    margin-bottom: 14px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .flavour-name {
+    font-size: 10px;
+    min-height: 28px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .flavour-meta {
+    font-size: 10px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .flavour-plus {
+    width: 23px;
+    height: 23px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .flavour-heart {
+    top: 7px;
+    right: 7px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .toppings-section {
+    margin-top: 26px;
+    padding-top: 26px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .topping-options {
+    gap: 7px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .topping-options > button {
+    font-size: 9px;
+    padding: 9px 11px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .mascot-copy p {
+    font-size: 22px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-section {
+    padding-top: 48px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-cards {
+    grid-template-columns: 1fr;
+    gap: 17px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-card {
+    padding: 25px;
+    min-height: 300px;
+    position: relative;
+    overflow: hidden;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-card-top {
+    margin-bottom: 120px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-illustration {
+    position: absolute;
+    right: 24px;
+    top: 34px;
+    width: 200px;
+    height: 140px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-card h3 {
+    font-size: 32px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-card > p {
+    font-size: 11px;
+    min-height: 0;
+    max-width: 280px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-card .eyebrow {
+    font-size: 8px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-detail {
+    margin-top: -80px;
+    position: relative;
+    max-width: 105px;
+    min-height: 80px;
+    line-height: 1.8 !important;
+    letter-spacing: 1.4px !important;
+    padding-top: 15px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-card-bottom {
+    font-size: 10px;
+    margin-top: 23px;
+  }
+  :where(.hotline-extras, .dialog-backdrop)
+    .arcade-card-bottom
+    > span:last-child {
+    font-size: 9px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-reward-note {
+    font-size: 9px;
+  }
+  .dialog-backdrop {
+    padding: 12px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .dialog-panel {
+    padding: 23px 22px 26px;
+    border-radius: 20px;
+    max-height: calc(100dvh - 24px);
+  }
+  :where(.hotline-extras, .dialog-backdrop) .dialog-panel h2 {
+    font-size: 31px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .dialog-top {
+    margin-bottom: 20px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-dialog-heading .eyebrow {
+    font-size: 7px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-dialog-heading h2 {
+    font-size: 33px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .game-arena {
+    height: 350px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .game-stats {
+    font-size: 10px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .game-stats b {
+    font-size: 13px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .matching-arena {
+    padding: 15px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .memory-grid {
+    gap: 8px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .memory-card-face {
+    font-size: 26px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .game-overlay {
+    padding: 23px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .game-overlay > p {
+    font-size: 11px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .game-result h3 {
+    font-size: 27px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .game-result > p {
+    font-size: 10px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .game-instructions {
+    font-size: 8px;
+  }
+}
+@media (max-width: 370px) {
+  :where(.hotline-extras, .dialog-backdrop) .studio-section,
+  :where(.hotline-extras, .dialog-backdrop) .arcade-section {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .creation-stage {
+    min-height: 340px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .flavour-scoop-art {
+    width: 56px;
+    height: 49px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .flavour-name {
+    font-size: 9px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .flavour-add {
+    padding: 17px 9px 9px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .category-tabs > button {
+    font-size: 9px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .container-picker > button {
+    font-size: 8px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .container-picker svg {
+    display: none;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .order-summary-button strong {
+    font-size: 15px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-illustration {
+    right: 10px;
+    width: 170px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .arcade-detail {
+    max-width: 90px;
+    font-size: 7px !important;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .dialog-panel {
+    padding-left: 17px;
+    padding-right: 17px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .game-arena {
+    height: 320px;
+  }
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-name {
+  font-size: 11px;
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-meta {
+  font-size: 10px;
+}
+:where(.hotline-extras, .dialog-backdrop) .flavour-heart {
+  width: 32px;
+  height: 32px;
+  right: 2px;
+  top: 2px;
+}
+@media (max-width: 760px) {
+  :where(.hotline-extras, .dialog-backdrop) .flavour-name {
+    font-size: 11px;
+  }
+  :where(.hotline-extras, .dialog-backdrop) .flavour-heart {
+    width: 36px;
+    height: 36px;
+  }
+}
+@media (max-width: 370px) {
+  :where(.hotline-extras, .dialog-backdrop) .flavour-name {
+    font-size: 10px;
+  }
+}
+:where(.hotline-extras, .dialog-backdrop) .creation-stage {
+  max-height: calc(100dvh - 220px);
+}
+@media (max-width: 760px) {
+  :where(.hotline-extras, .dialog-backdrop) .creation-stage {
+    max-height: 520px;
+  }
+}
+/* These variables and controls belong only to the optional activities. */
+.hotline-extras,
+.dialog-backdrop {
+  --bg: #fff8fa;
+  --paper: #fffdfd;
+  --ink: #49392e;
+  --muted: #897782;
+  --accent: #d34c77;
+  --accent-ink: #fff;
+  --line: #efdae3;
+  --soft: #f9edf2;
+  --stage: #f7d8e4;
+  --stripe: #ecc0d4;
+  color: var(--ink);
+  color-scheme: light;
+}
+:is(.hotline-extras, .dialog-backdrop)[data-world="needahug"] {
+  --bg: #302c43;
+  --paper: #3a344e;
+  --ink: #fcf5ff;
+  --muted: #c8bbd8;
+  --accent: #d6b8f2;
+  --accent-ink: #342741;
+  --line: #655773;
+  --soft: #453b58;
+  --stage: #66547f;
+  --stripe: #9880ad;
+  color-scheme: dark;
+}
+:is(.hotline-extras, .dialog-backdrop)[data-world="hungry"] {
+  --bg: #f3f7ed;
+  --paper: #fcfff8;
+  --ink: #3f513a;
+  --muted: #73806b;
+  --accent: #648255;
+  --accent-ink: #fff;
+  --line: #dce6d3;
+  --soft: #e8efdf;
+  --stage: #cfdfba;
+  --stripe: #adc59b;
+}
+:is(.hotline-extras, .dialog-backdrop)[data-world="celebration"] {
+  --bg: #fff4fb;
+  --paper: #fffcff;
+  --ink: #563a50;
+  --muted: #90778a;
+  --accent: #b75499;
+  --accent-ink: #fff;
+  --line: #efd8e8;
+  --soft: #f7e9f3;
+  --stage: #edc6e3;
+  --stripe: #d7a1ca;
+}
+:where(.hotline-extras, .dialog-backdrop) button {
+  font: inherit;
+  cursor: pointer;
+  color: inherit;
+  border: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+:where(.hotline-extras, .dialog-backdrop) button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+:where(.hotline-extras, .dialog-backdrop) button:focus-visible,
+:where(.hotline-extras, .dialog-backdrop) input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+:where(.hotline-extras, .dialog-backdrop) :is(h2, h3, em) {
+  font-family: "Playfair Display", serif;
+  letter-spacing: -0.5px;
+}
+:where(.hotline-extras, .dialog-backdrop) input[type="range"] {
+  padding: 0;
+  width: 100%;
+  accent-color: var(--accent);
+  background: transparent;
+  min-height: 14px;
+  cursor: ew-resize;
+}
+:where(.hotline-extras, .dialog-backdrop) .primary-button {
+  color: var(--accent-ink);
+  font-size: 12px;
+  min-height: 43px;
+  padding: 12px 20px;
+  background: var(--accent);
+}
+:where(.hotline-extras, .dialog-backdrop) .icon-button {
+  border: 1px solid var(--line);
+  background: transparent;
+}
+.hotline-extras {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: transparent;
+  min-width: 0;
+}
+.hotline-extras .extras-card {
+  padding: 0;
+  overflow: clip;
+  background: rgba(255, 255, 255, 0.72);
+  color: #49392e;
+}
+.hotline-extras .extras-toggle {
+  width: 100%;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  text-align: left;
+  color: #49392e;
+}
+.hotline-extras .extras-toggle > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.hotline-extras .extras-toggle b {
+  display: block;
+  font-size: 15px;
+  font-weight: 800;
+}
+.hotline-extras .extras-toggle small {
+  display: block;
+  font-size: 11px;
+  color: #8e7b83;
+  margin-top: 4px;
+  line-height: 1.5;
+}
+.hotline-extras .extras-icon {
+  display: grid;
+  place-items: center;
+  width: 43px;
+  height: 43px;
+  background: #ffe4ed;
+  color: #c85b7f;
+  border-radius: 15px;
+  flex-shrink: 0;
+}
+.hotline-extras .extras-panel {
+  padding: 18px 20px 22px;
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  border-radius: 0 0 24px 24px;
+}
+.hotline-extras .extras-options {
+  padding-bottom: 18px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.hotline-extras .extras-worlds {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+.hotline-extras .extras-worlds > button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  font-size: 10px;
+  font-weight: 600;
+}
+.hotline-extras .extras-worlds > button[aria-pressed="true"] {
+  border-color: var(--accent);
+}
+.hotline-extras .extras-worlds > button > span {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: white;
+  font-size: 13px;
+}
+.hotline-extras .extras-toggles {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.hotline-extras .extras-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 0;
+  background: none;
+  color: var(--muted);
+  font-size: 10px;
+}
+.hotline-extras .extras-option[aria-pressed="true"],
+.hotline-extras .extras-option[aria-checked="true"] {
+  color: var(--accent);
+}
+.hotline-extras .extras-game-sound {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+.hotline-extras .studio-section,
+.hotline-extras .arcade-section {
+  padding: 8px 0 0;
+  max-width: none;
+  margin: 0;
+  scroll-margin-top: 18px;
+}
+.hotline-extras .section-heading {
+  gap: 15px;
+  margin-bottom: 22px;
+  align-items: center;
+}
+.hotline-extras .section-heading h2 {
+  font-size: 25px;
+  line-height: 1.3;
+  margin: 7px 0 0;
+}
+.hotline-extras .section-heading p {
+  font-size: 11px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.hotline-extras .section-heading .eyebrow {
+  font-size: 8px;
+  letter-spacing: 1.3px;
+}
+.hotline-extras .studio-layout {
+  grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
+  gap: 23px;
+}
+.hotline-extras .creation-column {
+  top: 18px;
+}
+.hotline-extras .creation-stage {
+  min-height: 320px;
+  height: 390px;
+  max-height: 420px;
+  aspect-ratio: auto;
+  border-radius: 20px;
+}
+.hotline-extras .flavour-tray {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.hotline-extras .flavour-add {
+  padding: 15px 10px 10px;
+}
+.hotline-extras .flavour-name {
+  font-size: 10px;
+  font-weight: 700;
+}
+.hotline-extras .flavour-heart {
+  width: 31px;
+  height: 31px;
+  right: 2px;
+  top: 2px;
+  font-size: 21px;
+  font-weight: 400;
+}
+.hotline-extras .ingredient-heading h3 {
+  font-size: 23px;
+  line-height: 1.4;
+  margin-top: 3px;
+}
+.hotline-extras .order-summary-button {
+  padding: 15px 0;
+}
+.hotline-extras .order-summary-button strong {
+  font-family: Quicksand, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+.hotline-extras .order-price {
+  font-family: Quicksand, sans-serif;
+  font-size: 21px;
+  font-weight: 700;
+}
+.hotline-extras .extras-mascot {
+  margin: 22px auto 0;
+  padding: 15px 20px;
+  max-width: 410px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+}
+.hotline-extras .mascot-card {
+  gap: 12px;
+  justify-content: center;
+}
+.hotline-extras .mascot-button {
+  width: 115px;
+}
+.hotline-extras .mascot-copy p {
+  font-family: Quicksand, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+.hotline-extras .arcade-cards {
+  gap: 15px;
+}
+.hotline-extras .arcade-card {
+  padding: 20px;
+  border-radius: 20px;
+}
+.hotline-extras .arcade-card h3 {
+  font-size: 24px;
+  line-height: 1.3;
+}
+.hotline-extras .arcade-card p {
+  font-size: 11px;
+  line-height: 1.8;
+}
+.hotline-extras .arcade-card-bottom {
+  font-size: 10px;
+}
+.dialog-backdrop {
+  z-index: 160;
+  color: var(--ink);
+  font-family: Quicksand, sans-serif;
+}
+.dialog-backdrop .dialog-panel {
+  border-radius: 24px;
+  max-width: 620px;
+  padding: 23px 26px 26px;
+}
+.dialog-backdrop .arcade-dialog-heading h2 {
+  font-size: 29px;
+  line-height: 1.3;
+}
+.dialog-backdrop .game-result h3 {
+  font-size: 25px;
+  line-height: 1.4;
+}
+.dialog-backdrop .game-result > p {
+  font-size: 11px;
+  line-height: 1.8;
+}
+.dialog-backdrop .game-intro-icon {
+  color: var(--accent);
+}
+.dialog-backdrop .balance-guide {
+  position: absolute;
+  top: 11%;
+  border-left: 1px dashed var(--accent);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
+}
+.dialog-backdrop .balance-target {
+  width: 30px;
+  pointer-events: none;
+}
+.dialog-backdrop .moving-scoop,
+.dialog-backdrop .falling-balance-scoop {
+  z-index: 3;
+  pointer-events: none;
+}
+.dialog-backdrop .balance-scoop {
+  will-change: left, bottom;
+  transition: none;
+}
+.dialog-backdrop .game-background-word {
+  pointer-events: none;
+}
+@media (max-width: 1000px) {
+  .hotline-extras .flavour-tray {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .hotline-extras .studio-layout {
+    gap: 18px;
+  }
+}
+@media (max-width: 760px) {
+  .hotline-extras .extras-toggle {
+    padding: 16px;
+  }
+  .hotline-extras .extras-panel {
+    padding: 14px 14px 18px;
+  }
+  .hotline-extras .extras-worlds {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .hotline-extras .extras-worlds > button {
+    font-size: 9px;
+    padding: 8px;
+  }
+  .hotline-extras .section-heading {
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .hotline-extras .section-heading h2 {
+    font-size: 24px;
+  }
+  .hotline-extras .section-heading p {
+    font-size: 10px;
+  }
+  .hotline-extras .studio-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .hotline-extras .creation-column {
+    position: relative;
+    top: auto;
+    width: 100%;
+  }
+  .hotline-extras .creation-stage {
+    height: 355px;
+    min-height: 300px;
+    max-height: 390px;
+  }
+  .hotline-extras .flavour-tray {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .hotline-extras .flavour-name {
+    font-size: 10px;
+  }
+  .hotline-extras .flavour-heart {
+    width: 36px;
+    height: 36px;
+  }
+  .hotline-extras .flavour-scoop-art {
+    width: 56px;
+    height: 49px;
+  }
+  .hotline-extras .arcade-cards {
+    grid-template-columns: 1fr;
+  }
+  .hotline-extras .arcade-card {
+    min-height: 290px;
+  }
+  .hotline-extras .arcade-card h3 {
+    font-size: 26px;
+  }
+  .hotline-extras .mascot-button {
+    width: 100px;
+  }
+  .hotline-extras .extras-mascot {
+    padding: 12px;
+  }
+  .hotline-extras .mascot-copy p {
+    font-size: 13px;
+  }
+  .dialog-backdrop {
+    padding: 12px;
+  }
+  .dialog-backdrop .dialog-panel {
+    padding: 20px 18px 22px;
+  }
+  .dialog-backdrop .game-arena {
+    height: 340px;
+  }
+  .dialog-backdrop .game-instructions {
+    font-size: 8px;
+  }
+  .dialog-backdrop .arcade-dialog-heading h2 {
+    font-size: 26px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.hotline-extras, .dialog-backdrop) * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+:is(.hotline-extras, .dialog-backdrop)[data-calm="true"] * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}

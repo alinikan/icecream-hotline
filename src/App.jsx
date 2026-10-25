@@ -1,839 +1,490 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  AnimatePresence,
-  MotionConfig,
-  motion,
-  useReducedMotion,
-} from "motion/react";
-import {
-  ArrowDown,
-  ArrowRight,
-  ArrowUpRight,
-  Check,
-  Heart,
-  IceCream2,
-  Menu,
-  ShoppingBag,
-  SlidersHorizontal,
-  Sparkles,
-  Volume2,
-  VolumeX,
-  X,
-} from "lucide-react";
-import {
-  AVATARS,
-  FLAVOURS,
-  MOODS,
-  STAMPS_TO_UNLOCK,
-  TOPPINGS,
-} from "./data/flavours.js";
-import {
-  addScoop,
-  countScoops,
-  expandScoops,
-  MAX_SCOOPS,
-  safeProfile,
-  WORLDS,
-} from "./data/studio.js";
+import { useState, useMemo, useEffect, lazy, Suspense } from "react";
+import { Star, Gift, ShoppingBag, Clock } from "lucide-react";
+
+import RunawayQuestions from "./components/RunawayQuestions";
+import { FLAVOURS, TOPPINGS, MOODS, AVATARS, STAMPS_TO_UNLOCK } from "./data/flavours.js";
+import { clamp, isTouchOnly } from "./data/utils.js";
 import trackVisitor from "./data/trackVisitor.js";
-import useStoredState from "./hooks/useStoredState.js";
-import useSoundscape from "./hooks/useSoundscape.js";
 import useAudio from "./hooks/useAudio.js";
-import SundaeStudio, { SundaePreview } from "./components/SundaeStudio.jsx";
-import ScoopMascot from "./components/ScoopMascot.jsx";
-import Arcade from "./components/Arcade.jsx";
-import Dialog from "./components/Dialog.jsx";
+
+import FloatingEmojis from "./components/FloatingEmojis.jsx";
+import Confetti from "./components/Confetti.jsx";
+import DJBooth from "./components/DJBooth.jsx";
+import StampCard from "./components/StampCard.jsx";
+import NameErrorToast from "./components/NameErrorToast.jsx";
+import FlavourCard from "./components/FlavourCard.jsx";
 import OrderPanel from "./components/OrderPanel.jsx";
 import ReceiptModal from "./components/ReceiptModal.jsx";
-import DailyFortune from "./components/DailyFortune.jsx";
-import AboutMobina from "./components/AboutMobina.jsx";
-import RunawayQuestions from "./components/RunawayQuestions.jsx";
-import StampCard from "./components/StampCard.jsx";
-import DeliveryHotline from "./components/DeliveryHotline.jsx";
 import OrderHistoryPanel from "./components/OrderHistoryPanel.jsx";
-import DJBooth from "./components/DJBooth.jsx";
-import Confetti from "./components/Confetti.jsx";
+import DeliveryHotline from "./components/DeliveryHotline.jsx";
+import AboutMobina from "./components/AboutMobina.jsx";
+import DailyFortune from "./components/DailyFortune.jsx";
+import { safeProfile } from "./data/studio.js";
 
-const HOUSE_SCOOPS = expandScoops(
-  { straw: 1, vanilla: 1, matcha: 1 },
-  FLAVOURS,
-);
-const DEFAULT_PROFILE = safeProfile(null);
+const CreativeCorner = lazy(() => import("./components/CreativeCorner.jsx"));
 
 export default function App() {
-  const systemReduced = useReducedMotion();
-  const [calm, setCalm] = useStoredState(
-    "mh_calm_v1",
-    false,
-    (value) => value === true,
-  );
-  const reducedMotion = Boolean(systemReduced || calm);
-  const [profile, setProfile] = useStoredState(
-    "mh_profile_v1",
-    DEFAULT_PROFILE,
-    safeProfile,
-  );
-  const [rewardUnlocked, setRewardUnlocked] = useStoredState(
-    "mh_arcade_sprinkles_v1",
-    false,
-    (value) => value === true,
-  );
-  const [cart, setCart] = useState({});
+  const audio = useAudio();
+  const [savedProfile] = useState(() => {
+    try { return safeProfile(JSON.parse(localStorage.getItem("mh_profile_v1"))); }
+    catch { return safeProfile(null); }
+  });
+  const [screen, setScreen] = useState("login");
+  const [avatar, setAvatar] = useState(savedProfile.avatar);
+  const [moodId, setMoodId] = useState(savedProfile.moodId);
+  const [favorites, setFavorites] = useState(savedProfile.favorites);
+  const [stamps, setStamps] = useState(savedProfile.stamps);
+  const [cart, setCart] = useState({}); // { flavourId: qty }
   const [container, setContainer] = useState("cup");
   const [selectedToppings, setSelectedToppings] = useState([]);
-  const [starSprinkles, setStarSprinkles] = useState(false);
   const [note, setNote] = useState("");
-  const [entered, setEntered] = useState(false);
-  const [lastFlavour, setLastFlavour] = useState(null);
-  const [mobileMenu, setMobileMenu] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [orderOpen, setOrderOpen] = useState(false);
-  const [historyOpen, setHistoryOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [tagFilter, setTagFilter] = useState("all");
+  const [showFavs, setShowFavs] = useState(false);
   const [receipt, setReceipt] = useState(null);
   const [receiptOpen, setReceiptOpen] = useState(false);
+  const [orderHistory, setOrderHistory] = useState(savedProfile.orderHistory);
+  const [confetti, setConfetti] = useState(false);
+  const [mobileOrderOpen, setMobileOrderOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [questionsOpen, setQuestionsOpen] = useState(false);
-  const [confetti, setConfetti] = useState(false);
-  const [toast, setToast] = useState("");
-  const toastTimer = useRef();
-  const confettiTimer = useRef();
-  const world = WORLDS.find((item) => item.id === profile.moodId) || WORLDS[0];
-  const mood = MOODS.find((item) => item.id === profile.moodId) || MOODS[0];
-  const sounds = useSoundscape(world, reducedMotion);
-  const audio = useAudio();
-  const scoops = useMemo(() => expandScoops(cart, FLAVOURS), [cart]);
+  const [nameError, setNameError] = useState(false);
+  const [nameShake, setNameShake] = useState(false);
+  const [spriteJump, setSpriteJump] = useState(false);
+  const [w, setW] = useState(typeof window !== "undefined" ? window.innerWidth : 1200);
+  const isTouch = useMemo(() => isTouchOnly(), []);
+  const name = "Mobina"; // Locked!
+
+  useEffect(() => {
+    const h = () => setW(window.innerWidth);
+    window.addEventListener("resize", h);
+    return () => window.removeEventListener("resize", h);
+  }, []);
+
+  useEffect(() => {
+    try { localStorage.setItem("mh_profile_v1", JSON.stringify({ avatar, moodId, favorites, stamps, orderHistory })); }
+    catch { /* Existing features stay usable when browser storage is unavailable. */ }
+  }, [avatar, moodId, favorites, stamps, orderHistory]);
+
+  // Derived state
   const cartItems = useMemo(
     () =>
       Object.entries(cart)
         .map(([id, qty]) => {
-          const flavour = FLAVOURS.find((item) => item.id === id);
-          return flavour ? { ...flavour, qty } : null;
+          const f = FLAVOURS.find((x) => x.id === id);
+          return f ? { ...f, qty } : null;
         })
         .filter(Boolean),
-    [cart],
+    [cart]
   );
-  const total = useMemo(() => {
-    const flavours = cartItems.reduce(
-      (sum, item) => sum + item.price * item.qty,
-      0,
-    );
-    const toppings = selectedToppings.reduce(
-      (sum, id) => sum + (TOPPINGS.find((item) => item.id === id)?.price || 0),
-      0,
-    );
-    const vessel =
-      container === "waffle" ? 1.25 : container === "cone" ? 0.75 : 0;
-    return cartItems.length ? flavours + toppings + vessel : 0;
-  }, [cartItems, selectedToppings, container]);
 
-  useEffect(() => {
-    document.documentElement.dataset.world = world.id;
-    document.documentElement.dataset.calm = String(reducedMotion);
-    document
-      .querySelector('meta[name="theme-color"]')
-      ?.setAttribute(
-        "content",
-        world.id === "needahug" ? "#252337" : "#fbf6ec",
-      );
-  }, [world.id, reducedMotion]);
-  useEffect(
-    () => () => {
-      clearTimeout(toastTimer.current);
-      clearTimeout(confettiTimer.current);
-    },
-    [],
-  );
-  const notify = useCallback((message) => {
-    clearTimeout(toastTimer.current);
-    setToast(message);
-    toastTimer.current = setTimeout(() => setToast(""), 3600);
+  const mood = useMemo(() => MOODS.find((m) => m.id === moodId) || MOODS[0], [moodId]);
+  const unlockedLegendary = stamps >= STAMPS_TO_UNLOCK;
+
+  const allTags = useMemo(() => {
+    const s = new Set();
+    FLAVOURS.forEach((f) => {
+      if (!f.legendary) f.tags.forEach((t) => s.add(t));
+    });
+    return ["all", ...Array.from(s).sort()];
   }, []);
-  const enter = useCallback(() => {
-    setEntered(true);
-    trackVisitor({ label: "Let Me In / sundae studio" });
-  }, []);
-  function visit(id) {
-    enter();
-    setMobileMenu(false);
-    document.getElementById(id)?.scrollIntoView({
-      behavior: reducedMotion ? "instant" : "smooth",
-      block: "start",
+
+  const visibleFlavours = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return FLAVOURS.filter((f) => {
+      if (f.legendary && !unlockedLegendary) return false;
+      if (showFavs && !favorites.includes(f.id)) return false;
+      if (tagFilter !== "all" && !f.tags.includes(tagFilter)) return false;
+      if (!q) return true;
+      return `${f.name} ${f.tags.join(" ")}`.toLowerCase().includes(q);
+    });
+  }, [search, showFavs, tagFilter, favorites, unlockedLegendary]);
+
+  const total = useMemo(() => {
+    if (!cartItems.length) return 0;
+    const fc = cartItems.reduce((s, i) => s + i.price * i.qty, 0);
+    const tc = selectedToppings.reduce((s, id) => {
+      const t = TOPPINGS.find((x) => x.id === id);
+      return s + (t ? t.price : 0);
+    }, 0);
+    const cf = container === "waffle" ? 1.25 : container === "cone" ? 0.75 : 0;
+    const mm = moodId === "hungry" ? 1.06 : moodId === "celebration" ? 1.04 : 1.0;
+    return (fc + tc + cf) * mm;
+  }, [cartItems, selectedToppings, container, moodId]);
+
+  const isDesktop = w >= 768;
+
+  // Actions
+  function handleNameFocus() {
+    setNameError(true);
+    setNameShake(true);
+    setTimeout(() => setNameShake(false), 500);
+  }
+
+  function toggleFav(id) {
+    setFavorites((f) => (f.includes(id) ? f.filter((x) => x !== id) : [...f, id]));
+  }
+
+  function addToCart(f) {
+    setCart((c) => ({ ...c, [f.id]: (c[f.id] || 0) + 1 }));
+  }
+
+  function updateCartQty(id, delta) {
+    setCart((c) => {
+      const nq = (c[id] || 0) + delta;
+      if (nq <= 0) {
+        const { [id]: _, ...rest } = c;
+        return rest;
+      }
+      return { ...c, [id]: clamp(nq, 1, 12) };
     });
   }
-  function add(flavour) {
-    enter();
-    if (countScoops(cart) >= MAX_SCOOPS) {
-      notify("Six is a beautiful stack. Remove a scoop to try another.");
-      return;
-    }
-    if (flavour.legendary && profile.stamps < STAMPS_TO_UNLOCK) return;
-    setLastFlavour(flavour.name);
-    setCart((previous) => addScoop(previous, flavour.id));
-    sounds.chime("scoop");
-  }
-  function removeOne(id) {
-    setCart((previous) => {
-      const next = { ...previous };
-      if (next[id] > 1) next[id]--;
-      else delete next[id];
-      return next;
+
+  function removeFromCart(id) {
+    setCart((c) => {
+      const { [id]: _, ...rest } = c;
+      return rest;
     });
   }
-  function updateQty(id, delta) {
-    if (delta > 0) {
-      const flavour = FLAVOURS.find((item) => item.id === id);
-      if (flavour) add(flavour);
-    } else removeOne(id);
+
+  function toggleTopping(id) {
+    setSelectedToppings((t) => (t.includes(id) ? t.filter((x) => x !== id) : [...t, id]));
   }
-  function removeAll(id) {
-    setCart((previous) => {
-      const next = { ...previous };
-      delete next[id];
-      return next;
-    });
-  }
-  function clear() {
-    setCart({});
-    setSelectedToppings([]);
-    setStarSprinkles(false);
-  }
-  function topping(id) {
-    setSelectedToppings((previous) =>
-      previous.includes(id)
-        ? previous.filter((item) => item !== id)
-        : [...previous, id],
-    );
-    sounds.chime("topping");
-  }
-  function favorite(id) {
-    setProfile((previous) => ({
-      ...previous,
-      favorites: previous.favorites.includes(id)
-        ? previous.favorites.filter((item) => item !== id)
-        : [...previous.favorites, id],
-    }));
-  }
+
   function surprise() {
-    enter();
-    const flavours = FLAVOURS.filter(
-      (item) => !item.legendary || profile.stamps >= STAMPS_TO_UNLOCK,
-    );
-    const next = {};
-    for (let index = 0; index < 3; index++) {
-      const flavour = flavours[Math.floor(Math.random() * flavours.length)];
-      next[flavour.id] = (next[flavour.id] || 0) + 1;
+    const av = FLAVOURS.filter((f) => !f.legendary || unlockedLegendary);
+    const nc = {};
+    for (let i = 0; i < 1 + Math.floor(Math.random() * 3); i++) {
+      const f = av[Math.floor(Math.random() * av.length)];
+      nc[f.id] = (nc[f.id] || 0) + 1 + Math.floor(Math.random() * 2);
     }
-    setCart(next);
-    setSelectedToppings(["sprinkles"]);
-    sounds.chime("win");
-    notify("A little house special. Excellent choice, honestly.");
+    setCart(nc);
+    setSelectedToppings(TOPPINGS.filter(() => Math.random() > 0.6).map((t) => t.id));
+    setContainer(["cup", "cone", "waffle"][Math.floor(Math.random() * 3)]);
   }
-  const reward = useCallback(() => {
-    setRewardUnlocked(true);
-  }, [setRewardUnlocked]);
-  const closeOrder = useCallback(() => setOrderOpen(false), []);
-  const closeSettings = useCallback(() => setSettingsOpen(false), []);
-  const closeReceipt = useCallback(() => setReceiptOpen(false), []);
-  const closeHistory = useCallback(() => setHistoryOpen(false), []);
+
   function placeOrder() {
     if (!cartItems.length) return;
-    const stampsNow = profile.stamps + 1;
-    const next = {
-      time: Date.now(),
-      profileName: "Mobina",
-      profileAvatar: profile.avatar,
-      mood: `${mood.emoji} ${mood.name}`,
-      items: cartItems.map((item) => ({
-        name: item.name,
-        emoji: item.emoji,
-        qty: item.qty,
-      })),
-      container,
-      toppingsText: [
-        ...selectedToppings
-          .map((id) => TOPPINGS.find((item) => item.id === id)?.name)
-          .filter(Boolean),
-        ...(starSprinkles ? ["Arcade confetti sprinkles"] : []),
-      ].join(", "),
-      note,
-      total,
-      stampsNow,
-      unlocked: stampsNow === STAMPS_TO_UNLOCK,
+    const ns = stamps + 1;
+    const ju = ns >= STAMPS_TO_UNLOCK && stamps < STAMPS_TO_UNLOCK;
+    const items = cartItems.map((i) => ({ name: i.name, emoji: i.emoji, qty: i.qty }));
+    const tt = selectedToppings
+      .map((id) => { const t = TOPPINGS.find((x) => x.id === id); return t ? `${t.emoji} ${t.name}` : id; })
+      .join(", ");
+
+    const nr = {
+      time: Date.now(), profileName: name, profileAvatar: avatar,
+      mood: `${mood.emoji} ${mood.name}`, items, container, toppingsText: tt,
+      note, total, stampsNow: ns, unlocked: ju,
     };
-    setProfile((previous) => ({
-      ...previous,
-      stamps: stampsNow,
-      orderHistory: [...previous.orderHistory, next].slice(-30),
-    }));
-    setReceipt(next);
-    setOrderOpen(false);
+
+    setReceipt(nr);
     setReceiptOpen(true);
-    clear();
+    setStamps(ns);
+    setOrderHistory((h) => [...h, nr]);
+    setConfetti(true);
+    setTimeout(() => setConfetti(false), 3000);
+
+    setCart({});
+    setSelectedToppings([]);
     setNote("");
-    sounds.chime("win");
-    if (!reducedMotion) {
-      clearTimeout(confettiTimer.current);
-      setConfetti(true);
-      confettiTimer.current = setTimeout(() => setConfetti(false), 2600);
-    }
+    setContainer("cup");
   }
 
   return (
-    <MotionConfig reducedMotion={reducedMotion ? "always" : "user"}>
-      <div className="hotline-app" data-world={world.id}>
-        <a className="skip-link" href="#studio">
-          Skip to the sundae studio
-        </a>
-        <div className="world-atmosphere" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-          <i />
-          <i />
-          <i />
-          <i />
-          <i />
-          <i />
-          <i />
-          <i />
-        </div>
-        <div className="announcement-bar">
-          <span>A VERY IMPORTANT HOTLINE FOR VERY UNIMPORTANT CRAVINGS</span>
-          <span className="announcement-star">✳</span>
-          <span>EXCLUSIVELY YOURS, MOBINA</span>
-        </div>
-        <header className="site-header">
-          <a
-            href="#"
-            className="wordmark"
-            aria-label="Ice Cream Hotline home"
-            onClick={(event) => {
-              event.preventDefault();
-              window.scrollTo({
-                top: 0,
-                behavior: reducedMotion ? "instant" : "smooth",
-              });
-            }}
-          >
-            <span className="brand-icon">
-              <IceCream2 size={25} strokeWidth={1.6} />
-            </span>
-            <span>
-              ice cream
-              <br />
-              <b>hotline.</b>
-            </span>
-          </a>
-          <nav
-            className={`main-navigation ${mobileMenu ? "mobile-open" : ""}`}
-            aria-label="Main navigation"
-          >
-            {[
-              ["studio", "The studio"],
-              ["worlds", "Your world"],
-              ["arcade", "Play a little"],
-              ["little-things", "From Ali"],
-            ].map(([id, label]) => (
-              <a
-                key={id}
-                href={`#${id}`}
-                onClick={(event) => {
-                  event.preventDefault();
-                  visit(id);
-                }}
-              >
-                {label}
-              </a>
-            ))}
-          </nav>
-          <div className="header-actions">
-            <button
-              className={`sound-button ${sounds.enabled ? "enabled" : ""}`}
-              onClick={sounds.toggle}
-              aria-pressed={sounds.enabled}
-              aria-label={
-                sounds.enabled
-                  ? "Turn ambient sound off"
-                  : "Turn ambient sound on"
-              }
-            >
-              {sounds.enabled ? <Volume2 size={15} /> : <VolumeX size={15} />}
-              <span>Sound {sounds.enabled ? "on" : "off"}</span>
-            </button>
-            <button
-              className="profile-button"
-              aria-label="Personalise your corner"
-              onClick={() => setSettingsOpen(true)}
-            >
-              {profile.avatar}
-              <span>Mobina</span>
-              <SlidersHorizontal size={13} />
-            </button>
-            <button
-              className="mobile-menu-button icon-button"
-              aria-label={mobileMenu ? "Close navigation" : "Open navigation"}
-              aria-expanded={mobileMenu}
-              onClick={() => setMobileMenu((value) => !value)}
-            >
-              {mobileMenu ? <X size={20} /> : <Menu size={20} />}
-            </button>
-          </div>
-        </header>
+    <>
+      <FloatingEmojis />
+      <Confetti active={confetti} />
+      {screen === "shop" && <DJBooth audio={audio} isTouch={isTouch} />}
 
-        <main>
-          <section className="hero-section">
-            <motion.div
-              className="hero-copy"
-              initial={reducedMotion ? {} : { opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7 }}
-            >
-              <span className="eyebrow hero-eyebrow">
-                <span className="open-dot" /> A PRIVATE LITTLE CORNER, JUST FOR
-                YOU
-              </span>
-              <h1>
-                Life’s a little
-                <br />
-                sweeter <em>with you.</em>
-                <span className="hero-sparkle" aria-hidden="true">
-                  ✳
-                </span>
-              </h1>
-              <p>
-                Hey, Mobina. Welcome to your happy place.
-                <br />A few scoops, a little play, and all the good stuff.
-                <br className="desktop-break" /> Made with a whole lot of you in
-                mind.
-              </p>
-              <div className="hero-actions">
-                <button
-                  className="primary-button hero-cta"
-                  onClick={() => visit("studio")}
-                >
-                  Let me in! <ArrowUpRight size={20} />
-                </button>
-                <button
-                  className="hero-secondary"
-                  onClick={() => visit("arcade")}
-                >
-                  Or, play a little <ArrowRight size={16} />
-                </button>
-              </div>
-              <div className="hero-footnote">
-                <span className="drawn-heart">♡</span>
-                <span>
-                  No rush. No rules.
-                  <br />
-                  <b>Just a little something to make you smile.</b>
-                </span>
-              </div>
-            </motion.div>
-            <motion.div
-              className="hero-art"
-              initial={reducedMotion ? {} : { opacity: 0, scale: 0.94 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.9, delay: 0.1 }}
-            >
-              <div className="hero-art-arch" />
-              <div className="hero-art-orbit" />
-              <span className="hero-sticker">
-                100%
-                <br />
-                <i>your kind</i>
-                <br />
-                OF HAPPY
-              </span>
-              <span className="handwritten hero-note">
-                a little treat
-                <br />
-                looks good on you <span>↙</span>
-              </span>
-              <div className="hero-sundae">
-                <SundaePreview
-                  scoops={HOUSE_SCOOPS}
-                  toppings={["sprinkles"]}
-                  container="cup"
-                  world={world}
-                  autoRotate={!reducedMotion}
-                  reducedMotion={reducedMotion}
-                />
-              </div>
-              <span className="hero-vertical">
-                HANDCRAFTED HAPPINESS · EST. 2026
-              </span>
-              <div className="hero-art-caption">
-                <span className="eyebrow">THE HOUSE FAVOURITE</span>
-                <p>Strawberry. Vanilla. A little matcha.</p>
-              </div>
-              <div className="hero-mascot">
-                <ScoopMascot
-                  world={world}
-                  compact
-                  reducedMotion={reducedMotion}
-                  dancing={sounds.enabled || audio.isPlaying}
-                />
-                <span>Oh hey, Mobina.</span>
-              </div>
-            </motion.div>
-          </section>
+      <div style={{ position: "relative", zIndex: 1, minHeight: "100vh" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", padding: "20px 14px" }}>
 
-          <section id="worlds" className="world-selector section-anchor">
-            <div>
-              <span className="eyebrow">SET THE FEELING</span>
-              <p>
-                Your corner. <em>Your kind of day.</em>
-              </p>
-            </div>
-            <div className="world-options">
-              {WORLDS.map((item) => (
-                <button
-                  key={item.id}
-                  className={world.id === item.id ? "selected" : ""}
-                  aria-pressed={world.id === item.id}
-                  onClick={() => {
-                    setProfile((previous) => ({
-                      ...previous,
-                      moodId: item.id,
-                    }));
-                    sounds.chime("scoop");
-                  }}
-                >
-                  <span
-                    className="world-swatch"
-                    style={{ background: item.colour }}
-                  >
-                    {item.emoji}
-                  </span>
-                  <span>{item.name}</span>
-                  {world.id === item.id && <Check size={13} />}
-                </button>
-              ))}
-            </div>
-          </section>
-          <div className="marquee-strip" aria-hidden="true">
-            <span>GOOD DAYS</span>
-            <i>✳</i>
-            <span>GREAT SCOOPS</span>
-            <i>✳</i>
-            <span>EXTRA SPRINKLES</span>
-            <i>✳</i>
-            <span>ONLY GOOD VIBES</span>
-            <i>✳</i>
-            <span>GOOD DAYS</span>
-            <i>✳</i>
-          </div>
-
-          <SundaeStudio
-            {...{
-              cart,
-              container,
-              selectedToppings,
-              world,
-              reducedMotion,
-              starSprinkles,
-              rewardUnlocked,
-              total,
-            }}
-            onAdd={add}
-            onRemoveOne={removeOne}
-            onClear={clear}
-            onContainer={setContainer}
-            onTopping={topping}
-            onStarSprinkles={() => setStarSprinkles((value) => !value)}
-            onOpenOrder={() => setOrderOpen(true)}
-            favorites={profile.favorites}
-            onFavorite={favorite}
-            onSurprise={surprise}
-            legendaryUnlocked={profile.stamps >= STAMPS_TO_UNLOCK}
-          />
-
-          <section className="scoopie-interlude">
-            <div className="interlude-star" aria-hidden="true">
-              ✳
-            </div>
-            <div>
-              <span className="eyebrow">A VERY QUALIFIED OPINION</span>
-              <h2>
-                “You deserve the
-                <br />
-                <em>extra scoop.”</em>
-              </h2>
-              <p>— Scoopie, professional enabler since five minutes ago.</p>
-            </div>
-            <ScoopMascot
-              world={world}
-              scoopCount={scoops.length}
-              flavourName={lastFlavour}
-              dancing={sounds.enabled || audio.isPlaying}
-              reducedMotion={reducedMotion}
-            />
-          </section>
-
-          <Arcade
-            onEnter={enter}
-            onReward={reward}
-            chime={sounds.chime}
-            {...{ rewardUnlocked, reducedMotion }}
-          />
-
-          <section
-            id="little-things"
-            className="little-things-section section-anchor"
-          >
-            <div className="section-heading">
+          {/* ─── HEADER ─── */}
+          <header className="anim-fade-up" style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "center", gap: 10 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div className="anim-float" style={{
+                width: 44, height: 44, borderRadius: 16,
+                background: `linear-gradient(135deg, ${mood.accent}, #fff)`,
+                display: "grid", placeItems: "center", fontSize: 22,
+                boxShadow: "0 6px 20px rgba(0,0,0,.06)",
+              }}>🍦</div>
               <div>
-                <span className="eyebrow">
-                  <span className="section-number">03</span> IT’S THE LITTLE
-                  THINGS
-                </span>
-                <h2>
-                  A little more <em>just because.</em>
-                </h2>
-              </div>
-              <p>
-                Some things never get old.
-                <br />
-                Especially making you smile.
-              </p>
-            </div>
-            <div className="little-things-grid">
-              <div className="legacy-content fortune-slot">
-                <DailyFortune />
-              </div>
-              <div className="personal-note">
-                <span className="eyebrow">A NOTE FROM THE FOUNDER (ALI)</span>
-                <span className="note-star" aria-hidden="true">
-                  ✳
-                </span>
-                <h3>
-                  The best things
-                  <br />
-                  are made <em>personal.</em>
-                </h3>
-                <p>
-                  Like this little corner of the internet.
-                  <br />
-                  And your very questionable taste in toppings.
-                  <br />
-                  Kidding. Mostly.
+                <h1 style={{
+                  fontSize: isDesktop ? 22 : 18, fontWeight: 800, fontFamily: "'Playfair Display', serif",
+                  background: "linear-gradient(135deg,#FF6B8A,#FFAB91)",
+                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                }}>Ice Cream Hotline</h1>
+                <p style={{ fontSize: 11, color: "rgba(0,0,0,.45)", fontWeight: 600 }}>
+                  Mobina's private ice cream portal. VIP access only.
                 </p>
-                <span className="handwritten">Made for you, always.</span>
-                <button
-                  className="text-button"
-                  onClick={() => setHistoryOpen(true)}
-                >
-                  Your past little treats <ArrowUpRight size={15} />
+              </div>
+            </div>
+            {screen === "shop" && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
+                <div className="glass" style={{ padding: "6px 12px", fontSize: 13, fontWeight: 700, borderRadius: 14 }}>
+                  {avatar} {name}
+                </div>
+                <button className="btn btn-ghost" style={{ fontSize: 12, padding: "6px 12px" }}
+                  onClick={() => { if (orderHistory.length) { setReceipt(orderHistory[orderHistory.length - 1]); setReceiptOpen(true); }}}
+                  disabled={!orderHistory.length}>
+                  <Clock size={13} /> Last
                 </button>
-              </div>
-              <div className="legacy-content">
-                <RunawayQuestions
-                  isOpen={questionsOpen}
-                  onToggle={() => setQuestionsOpen((value) => !value)}
-                />
-              </div>
-              <div className="legacy-content">
-                <AboutMobina
-                  isOpen={aboutOpen}
-                  onToggle={() => setAboutOpen((value) => !value)}
-                />
-              </div>
-              <div className="legacy-content">
-                <StampCard stamps={profile.stamps} />
-              </div>
-              <div className="legacy-content">
-                <DeliveryHotline />
-              </div>
-            </div>
-          </section>
-
-          <section className="closing-note">
-            <span className="closing-doodle">♡</span>
-            <h2>
-              Same time,
-              <br />
-              <em>next craving?</em>
-            </h2>
-            <button className="text-button" onClick={() => visit("studio")}>
-              There’s always room for one more <ArrowUpRight size={17} />
-            </button>
-          </section>
-        </main>
-
-        <footer className="site-footer">
-          <a className="footer-brand" href="#" aria-label="Back to the top">
-            ice cream hotline.
-          </a>
-          <span>
-            Made with a little code & a lot of care.
-            <br />
-            Exclusively for Mobina. Pretend scoops, real smiles.
-          </span>
-          <button
-            className="text-button"
-            onClick={() =>
-              window.scrollTo({
-                top: 0,
-                behavior: reducedMotion ? "instant" : "smooth",
-              })
-            }
-          >
-            Back to the top ↑
-          </button>
-        </footer>
-        {entered && (
-          <DJBooth
-            audio={audio}
-            isTouch={
-              typeof window !== "undefined" &&
-              window.matchMedia("(pointer: coarse)").matches
-            }
-          />
-        )}
-        <AnimatePresence>
-          {scoops.length > 0 && (
-            <motion.button
-              className="floating-order"
-              initial={{ y: 80 }}
-              animate={{ y: 0 }}
-              exit={{ y: 80 }}
-              onClick={() => setOrderOpen(true)}
-              aria-label={`Review your order, ${scoops.length} scoop${scoops.length === 1 ? "" : "s"}`}
-            >
-              <ShoppingBag size={18} />
-              <span>
-                Your cup <b>{scoops.length}</b>
-              </span>
-              <strong>${total.toFixed(2)}</strong>
-              <ArrowUpRight size={16} />
-            </motion.button>
-          )}
-        </AnimatePresence>
-        {!reducedMotion && <Confetti active={confetti} />}
-        <AnimatePresence>
-          {toast && (
-            <motion.div
-              className="site-toast"
-              role="status"
-              initial={{ y: 15, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <Sparkles size={16} />
-              {toast}
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        <Dialog
-          open={settingsOpen}
-          onClose={closeSettings}
-          title="Personalise your corner"
-          className="settings-dialog"
-        >
-          <span className="eyebrow">THE ONLY VIP HERE</span>
-          <h2>Your little corner.</h2>
-          <label className="field-label" htmlFor="vip-name">
-            Your name
-          </label>
-          <input
-            id="vip-name"
-            value="Mobina"
-            readOnly
-            onFocus={() =>
-              notify("This little corner has only one VIP: Mobina.")
-            }
-          />
-          <label className="field-label">Pick your little avatar</label>
-          <div className="avatar-options">
-            {AVATARS.map((avatar) => (
-              <button
-                key={avatar}
-                aria-label={`Choose ${avatar} avatar`}
-                aria-pressed={profile.avatar === avatar}
-                className={profile.avatar === avatar ? "selected" : ""}
-                onClick={() =>
-                  setProfile((previous) => ({ ...previous, avatar }))
-                }
-              >
-                {avatar}
-              </button>
-            ))}
-          </div>
-          <button
-            className="calm-toggle"
-            role="switch"
-            aria-checked={calm || Boolean(systemReduced)}
-            disabled={Boolean(systemReduced)}
-            onClick={() => setCalm((value) => !value)}
-          >
-            <span>
-              <b>Gentler animations</b>
-              <small>
-                {systemReduced
-                  ? "Following your device’s reduced motion setting"
-                  : "A calmer corner, with less movement"}
-              </small>
-            </span>
-            <i className={reducedMotion ? "on" : ""} />
-          </button>
-          <p className="settings-note">
-            Your avatar, world, favourites, orders, and original stamp card are
-            saved in this browser.
-          </p>
-        </Dialog>
-        <Dialog
-          open={orderOpen}
-          onClose={closeOrder}
-          title="Your cup"
-          className="order-dialog"
-        >
-          <OrderPanel
-            mood={mood}
-            cartItems={cartItems}
-            toppings={TOPPINGS}
-            {...{ selectedToppings, container, note, total }}
-            onUpdateQty={updateQty}
-            onRemove={removeAll}
-            onContainer={setContainer}
-            onToggleTopping={topping}
-            onNote={setNote}
-            onPlace={placeOrder}
-            onSurprise={surprise}
-          />
-        </Dialog>
-        <ReceiptModal
-          open={receiptOpen}
-          onClose={closeReceipt}
-          receipt={receipt}
-        />
-        <Dialog
-          open={historyOpen}
-          onClose={closeHistory}
-          title="Your order history"
-        >
-          <div className="legacy-content">
-            {profile.orderHistory.length ? (
-              <OrderHistoryPanel
-                history={profile.orderHistory}
-                onView={(item) => {
-                  setReceipt(item);
-                  setHistoryOpen(false);
-                  setReceiptOpen(true);
-                }}
-              />
-            ) : (
-              <div className="history-empty">
-                <h2>Your first treat is waiting.</h2>
-                <p>
-                  Your pretend orders will be saved here. Make something lovely
-                  in the sundae studio.
-                </p>
               </div>
             )}
-          </div>
-        </Dialog>
+          </header>
+
+          {/* ─── LOGIN SCREEN ─── */}
+          {screen === "login" && (
+            <div className="anim-fade-up" style={{ marginTop: 28, maxWidth: 480, marginLeft: "auto", marginRight: "auto" }}>
+              <div className="glass-strong" style={{ padding: isDesktop ? "32px 28px" : "24px 18px", textAlign: "center" }}>
+                <div style={{ fontSize: 48, marginBottom: 10 }}>🍦🍪</div>
+                <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: isDesktop ? 28 : 24, fontWeight: 700 }}>
+                  Hey Mobina!
+                </h2>
+                <p style={{ fontSize: 14, color: "rgba(0,0,0,.5)", marginTop: 6, lineHeight: 1.6 }}>
+                  Welcome to your private ice cream portal.<br />
+                  Pick any flavour. Any mood. Unlimited scoops.
+                </p>
+
+                <div style={{ marginTop: 20, textAlign: "left" }}>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(0,0,0,.5)", textTransform: "uppercase", letterSpacing: 1 }}>
+                    Your Name
+                  </label>
+                  <div className={nameShake ? "anim-shake" : ""}>
+                    <input value={name} readOnly onFocus={handleNameFocus} onClick={handleNameFocus} style={{ marginTop: 6 }} />
+                  </div>
+                  <NameErrorToast show={nameError} onHide={() => setNameError(false)} />
+                </div>
+
+                <div style={{ marginTop: 14, textAlign: "left" }}>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(0,0,0,.5)", textTransform: "uppercase", letterSpacing: 1 }}>
+                    Pick Your Avatar
+                  </label>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
+                    {AVATARS.map((a) => (
+                      <button key={a} onClick={() => setAvatar(a)} style={{
+                        width: 46, height: 46, borderRadius: 14, fontSize: 20, display: "grid", placeItems: "center",
+                        border: avatar === a ? "2px solid var(--pink)" : "1.5px solid rgba(0,0,0,.08)",
+                        background: avatar === a ? "#FFE4EC" : "rgba(255,255,255,.6)", transition: "all .2s",
+                        WebkitTapHighlightColor: "transparent",
+                      }}>{a}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{ marginTop: 14, textAlign: "left" }}>
+                  <label style={{ fontSize: 11, fontWeight: 700, color: "rgba(0,0,0,.5)", textTransform: "uppercase", letterSpacing: 1 }}>
+                    How Are You Feeling?
+                  </label>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8 }}>
+                    {MOODS.map((m) => (
+                      <button key={m.id} className="btn" onClick={() => setMoodId(m.id)} style={{
+                        fontSize: 13, padding: "8px 14px",
+                        background: moodId === m.id ? "var(--pink)" : "rgba(255,255,255,.6)",
+                        color: moodId === m.id ? "#fff" : "#555",
+                        border: moodId === m.id ? "1.5px solid var(--pink)" : "1.5px solid rgba(0,0,0,.06)",
+                      }}>{m.emoji} {m.name}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div style={{
+                  display: "flex", alignItems: "flex-end", gap: 12,
+                  marginTop: 24, justifyContent: "center",
+                }}>
+                  <img
+                    src="/assets/mobina-sprite.png"
+                    alt="Mobina"
+                    style={{
+                      width: 52,
+                      height: "auto",
+                      imageRendering: "pixelated",
+                      animation: spriteJump
+                        ? "sprite-jump 0.5s ease both"
+                        : "idle-bounce 2s ease-in-out infinite",
+                      flexShrink: 0,
+                    }}
+                  />
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => {
+                      setSpriteJump(true);
+                      setTimeout(() => {
+                        setScreen("shop");
+                        trackVisitor({ label: "Let Me In button" });
+                        audio.play();
+                        setSpriteJump(false);
+                      }, 600);
+                    }}
+                    style={{ flex: 1, padding: 14, fontSize: 16 }}
+                  >
+                    Let Me In! 🍦
+                  </button>
+                </div>
+                {!isTouch && (
+                  <p style={{ fontSize: 11, color: "rgba(0,0,0,.35)", marginTop: 10 }}>
+                    (psst — check your cursor, a legend is following you 😎)
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ─── SHOP SCREEN ─── */}
+          {screen === "shop" && (
+            <>
+              <div style={{ marginTop: 16, display: "grid", gridTemplateColumns: "1fr", gap: 16, alignItems: "start" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+
+                  <RunawayQuestions isOpen={questionsOpen} onToggle={() => setQuestionsOpen(v => !v)} />
+
+                  {/* Daily Fortune */}
+                  <DailyFortune />
+
+                  {/* About Mobina */}
+                  <AboutMobina isOpen={aboutOpen} onToggle={() => setAboutOpen(v => !v)} />
+
+                  {/* Optional activities, kept separate from the original menu. */}
+                  <Suspense fallback={null}><CreativeCorner moodId={moodId} favorites={favorites} onFavorite={toggleFav} legendaryUnlocked={unlockedLegendary}
+                    onAddToOrder={({ cart: creation, container: vessel, toppings }) => {
+                      setCart(current => {
+                        const next = { ...current };
+                        Object.entries(creation).forEach(([id, qty]) => { next[id] = (next[id] || 0) + qty; });
+                        return next;
+                      });
+                      setContainer(vessel);
+                      setSelectedToppings(current => [...new Set([...current, ...toppings])]);
+                      setMobileOrderOpen(true);
+                    }} /></Suspense>
+
+                  {/* Search & filters */}
+                  <div className="glass" style={{ padding: "16px 20px" }}>
+                    <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-between", alignItems: "flex-start", gap: 8 }}>
+                      <div>
+                        <h2 style={{ fontSize: 20, fontWeight: 800 }}>Menu</h2>
+                        <p style={{ fontSize: 13, color: "rgba(0,0,0,.5)" }}>
+                          Welcome back, <b>{name}</b>! Your scoops await 🍦
+                        </p>
+                      </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
+                        <div className="glass" style={{ padding: "5px 10px", borderRadius: 12, fontSize: 12, fontWeight: 700 }}>
+                          Mood:
+                          <select value={moodId} onChange={(e) => setMoodId(e.target.value)} style={{ background: "none", border: "none", fontWeight: 800, fontSize: 12, marginLeft: 4, padding: 0, width: "auto" }}>
+                            {MOODS.map((m) => <option key={m.id} value={m.id}>{m.emoji} {m.name}</option>)}
+                          </select>
+                        </div>
+                        <button className="btn btn-ghost" onClick={() => setShowFavs((v) => !v)} style={{ fontSize: 12, padding: "5px 10px" }}>
+                          {showFavs ? <><Star size={13} fill="#FFD700" color="#FFD700" /> Faves</> : <><Star size={13} /> Faves</>}
+                        </button>
+                      </div>
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 8, marginTop: 10 }}>
+                      <input placeholder="Search flavours..." value={search} onChange={(e) => setSearch(e.target.value)} />
+                      <select value={tagFilter} onChange={(e) => setTagFilter(e.target.value)} style={{ minWidth: 90 }}>
+                        {allTags.map((t) => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Flavour grid */}
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(240px, 100%), 1fr))", gap: 12 }}>
+                    {visibleFlavours.map((f, i) => (
+                      <div key={f.id} style={{ animationDelay: `${i * 0.03}s` }} className="anim-fade-up">
+                        <FlavourCard f={f} isFav={favorites.includes(f.id)} isLocked={f.legendary && !unlockedLegendary} onFav={toggleFav} onAdd={addToCart} />
+                      </div>
+                    ))}
+                    {!visibleFlavours.length && (
+                      <div style={{ gridColumn: "1/-1", textAlign: "center", padding: 40, color: "rgba(0,0,0,.4)" }}>
+                        <div style={{ fontSize: 40, marginBottom: 8 }}>🔍</div>No flavours found!
+                      </div>
+                    )}
+                  </div>
+
+                  <StampCard stamps={stamps} />
+                  <DeliveryHotline />
+                  <OrderHistoryPanel history={orderHistory} onView={(r) => { setReceipt(r); setReceiptOpen(true); }} />
+
+                  {/* How it works */}
+                  <div className="glass" style={{ padding: "18px 22px" }}>
+                    <h3 style={{ fontSize: 16, fontWeight: 800, display: "flex", alignItems: "center", gap: 6 }}>
+                      <Gift size={16} style={{ color: "var(--pink)" }} /> How It Works
+                    </h3>
+                    <div style={{ marginTop: 10, display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))", gap: 10 }}>
+                      {[
+                        ["1️⃣", "Pick your mood & flavours"],
+                        ["2️⃣", "Build your dream order"],
+                        ["3️⃣", "Get a cute receipt"],
+                        ["4️⃣", `${STAMPS_TO_UNLOCK} stamps = secret flavour!`],
+                      ].map(([n, t]) => (
+                        <div key={n} style={{
+                          background: "rgba(255,255,255,.5)", borderRadius: 14, padding: "10px 12px",
+                          border: "1px solid rgba(0,0,0,.04)", fontSize: 12, fontWeight: 600,
+                          color: "rgba(0,0,0,.6)", display: "flex", gap: 6,
+                        }}>
+                          <span style={{ fontSize: 16 }}>{n}</span>{t}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating cart button (always visible) */}
+              <button onClick={() => setMobileOrderOpen(true)} style={{
+                position: "fixed", bottom: 20, right: 16, zIndex: 50,
+                width: isDesktop ? 64 : 56, height: isDesktop ? 64 : 56, borderRadius: "50%",
+                background: "linear-gradient(135deg,#FF6B8A,#FF8FA3)", color: "#fff", border: "none",
+                display: "grid", placeItems: "center", boxShadow: "0 8px 24px rgba(255,107,138,.35)",
+                WebkitTapHighlightColor: "transparent",
+              }}>
+                <ShoppingBag size={isDesktop ? 24 : 22} />
+                {cartItems.length > 0 && (
+                  <span style={{
+                    position: "absolute", top: -4, right: -4, background: "#1a1a2e", color: "#fff",
+                    fontSize: 11, fontWeight: 800, width: 22, height: 22, borderRadius: "50%", display: "grid", placeItems: "center",
+                  }}>{cartItems.reduce((s, i) => s + i.qty, 0)}</span>
+                )}
+              </button>
+
+              {/* Order panel bottom sheet */}
+              {mobileOrderOpen && (
+                <div style={{ position: "fixed", inset: 0, zIndex: 80, display: "flex", flexDirection: "column", alignItems: isDesktop ? "center" : "stretch" }}>
+                  <div
+                    style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,.3)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)" }}
+                    onClick={() => setMobileOrderOpen(false)}
+                  />
+                  <div style={{
+                    position: "relative", marginTop: "auto", maxHeight: "88vh", overflowY: "auto",
+                    width: isDesktop ? "min(480px, 100%)" : "100%",
+                    borderRadius: "24px 24px 0 0", background: "var(--cream)", padding: "8px 0 0",
+                    WebkitOverflowScrolling: "touch",
+                  }}>
+                    <div style={{ width: 40, height: 4, borderRadius: 2, background: "rgba(0,0,0,.15)", margin: "0 auto 8px" }} />
+                    <div style={{ padding: "0 12px 24px" }}>
+                      <OrderPanel
+                        mood={mood} cartItems={cartItems} toppings={TOPPINGS}
+                        selectedToppings={selectedToppings} container={container} note={note}
+                        onUpdateQty={updateCartQty} onRemove={removeFromCart}
+                        onContainer={setContainer} onToggleTopping={toggleTopping}
+                        onNote={setNote}
+                        onPlace={() => { placeOrder(); setMobileOrderOpen(false); }}
+                        onSurprise={surprise} total={total}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+
+          <footer style={{ marginTop: 40, paddingBottom: 100, textAlign: "center" }}>
+            <p style={{ fontSize: 12, color: "rgba(0,0,0,.3)", fontWeight: 600 }}>Made with 🍦 just for Mobina</p>
+          </footer>
+        </div>
       </div>
-    </MotionConfig>
+
+      <ReceiptModal open={receiptOpen} onClose={() => setReceiptOpen(false)} receipt={receipt} />
+    </>
   );
 }

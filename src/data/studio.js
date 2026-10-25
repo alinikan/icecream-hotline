@@ -65,11 +65,11 @@ export const WORLDS = [
   },
   {
     id: "celebration",
-    name: "Birthday everyday",
+    name: "Party mode",
     short: "Party",
     emoji: "✧",
     mood: "Celebration",
-    line: "No occasion necessary. You are the occasion.",
+    line: "Colourful scoops and extra sprinkles.",
     colour: "#c588ad",
     scene: "#e5b3cb",
     accent: "#b66791",
@@ -125,15 +125,6 @@ export function shufflePairs(random = Math.random) {
 
 export function isCaught(item, basket) {
   return item.y >= 78 && item.y <= 90 && Math.abs(item.x - basket) < 10;
-}
-
-export function balanceResult(offset, layers) {
-  const distance = Math.abs(offset);
-  if (distance > 26) return { toppled: true, points: 0 };
-  return {
-    toppled: false,
-    points: Math.max(1, Math.round(100 - distance * 3)) + layers * 5,
-  };
 }
 
 export function safeProfile(value) {

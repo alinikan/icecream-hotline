@@ -12,7 +12,8 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import Dialog from "./Dialog.jsx";
-import { balanceResult, isCaught, shufflePairs } from "../data/studio.js";
+import BalanceGame from "./BalanceGame.jsx";
+import { isCaught, shufflePairs } from "../data/studio.js";
 import useStoredState from "../hooks/useStoredState.js";
 
 const GAMES = [
@@ -28,9 +29,8 @@ const GAMES = [
   {
     id: "match",
     number: "02",
-    name: "Flavour crush",
-    description:
-      "Find the flavour soulmates. Six sweet pairs, one very good memory.",
+    name: "Flavour match",
+    description: "Find all six matching pairs. See how few moves you need.",
     detail: "6 PAIRS · MEMORY",
     colour: "sage",
   },
@@ -60,12 +60,12 @@ function GameIntro({ children, onStart, label = "Let's play" }) {
 function GameResult({ score, won, onRestart, children }) {
   return (
     <div className="game-overlay game-result" role="status">
-      <span className="game-result-icon">{won ? "✦" : "♡"}</span>
+      <span className="game-result-icon">{won ? "✦" : "↻"}</span>
       <span className="eyebrow">
         {won ? "SWEET VICTORY" : "ONE MORE LITTLE TRY?"}
       </span>
       <h3>
-        {won ? "You absolutely scooped it." : "Still our favourite player."}
+        {won ? "You absolutely scooped it." : "Good try. Have another go!"}
       </h3>
       <p>{children}</p>
       <strong className="game-result-score">
@@ -386,14 +386,13 @@ function MatchGame({ onFinish, chime }) {
         </div>
         {status === "ready" && (
           <GameIntro onStart={start}>
-            Flip two cards at a time. Find all six matching flavours. Every pair
-            is a tiny love story.
+            Flip two cards at a time. Find all six matching flavours. Find all
+            six pairs to win.
           </GameIntro>
         )}
         {status === "done" && (
           <GameResult score={finalScore} won onRestart={start}>
-            All six soulmates, reunited in {moves} moves. Confetti sprinkles
-            unlocked.
+            All six pairs matched in {moves} moves. Confetti sprinkles unlocked.
           </GameResult>
         )}
       </div>
@@ -401,193 +400,6 @@ function MatchGame({ onFinish, chime }) {
         <span>Tap cards or use Tab + Enter</span>
         <button className="text-button" onClick={start}>
           <RotateCcw size={13} /> New round
-        </button>
-      </div>
-    </>
-  );
-}
-
-function BalanceGame({ onFinish, chime }) {
-  const [status, setStatus] = useState("ready");
-  const [view, setView] = useState({
-    x: 50,
-    layers: [],
-    score: 0,
-    remaining: 30,
-  });
-  const state = useRef({ x: 50, layers: [], score: 0, elapsed: 0, phase: 0 });
-  const drop = useCallback(() => {
-    if (status !== "running") return;
-    const game = state.current;
-    const centre = game.layers.length
-      ? game.layers[game.layers.length - 1]
-      : 50;
-    const result = balanceResult((game.x - centre) * 1.7, game.layers.length);
-    if (result.toppled) {
-      setStatus("done");
-      onFinish("balance", game.score, false);
-      return;
-    }
-    game.layers.push(game.x);
-    game.score += result.points;
-    game.phase += 1.2;
-    chime("topping");
-    setView({
-      ...game,
-      layers: [...game.layers],
-      remaining: Math.max(0, Math.ceil(30 - game.elapsed)),
-    });
-    if (game.layers.length >= 8) {
-      setStatus("done");
-      onFinish("balance", game.score, true);
-    }
-  }, [status, onFinish, chime]);
-  useEffect(() => {
-    if (status !== "running") return;
-    let frame;
-    let previous;
-    let lastRender = 0;
-    function tick(now) {
-      const elapsedDelta = previous ? Math.max(0, (now - previous) / 1000) : 0;
-      const delta = Math.min(elapsedDelta, 0.05);
-      previous = now;
-      const game = state.current;
-      game.elapsed += elapsedDelta;
-      game.x =
-        50 +
-        Math.sin(
-          game.elapsed * (1.75 + game.layers.length * 0.13) + game.phase,
-        ) *
-          34;
-      if (now - lastRender > 30) {
-        setView({
-          x: game.x,
-          layers: [...game.layers],
-          score: game.score,
-          remaining: Math.max(0, Math.ceil(30 - game.elapsed)),
-        });
-        lastRender = now;
-      }
-      if (game.elapsed >= 30) {
-        setView({
-          x: game.x,
-          layers: [...game.layers],
-          score: game.score,
-          remaining: 0,
-        });
-        setStatus("done");
-        onFinish("balance", game.score, false);
-        return;
-      }
-      frame = requestAnimationFrame(tick);
-    }
-    const key = (event) => {
-      if (event.code === "Space") {
-        event.preventDefault();
-        drop();
-      }
-    };
-    const hide = () => {
-      if (document.hidden) setStatus("paused");
-    };
-    frame = requestAnimationFrame(tick);
-    window.addEventListener("keydown", key);
-    document.addEventListener("visibilitychange", hide);
-    return () => {
-      cancelAnimationFrame(frame);
-      window.removeEventListener("keydown", key);
-      document.removeEventListener("visibilitychange", hide);
-    };
-  }, [status, drop, onFinish]);
-  const start = () => {
-    state.current = { x: 50, layers: [], score: 0, elapsed: 0, phase: 0 };
-    setView({ x: 50, layers: [], score: 0, remaining: 30 });
-    setStatus("running");
-  };
-  return (
-    <>
-      <div className="game-stats">
-        <span>
-          <b>{view.layers.length}</b> / 8 scoops
-        </span>
-        <span>
-          <b>{view.remaining}s</b> left
-        </span>
-        <span>
-          <b>{view.score}</b> points
-        </span>
-      </div>
-      <div className="balance-arena game-arena">
-        <div className="game-background-word">steady.</div>
-        <div
-          className="balance-target"
-          style={{
-            left: `${view.layers.length ? view.layers[view.layers.length - 1] : 50}%`,
-            bottom: `${15 + view.layers.length * 6}%`,
-          }}
-        />
-        <div className="balance-cup">HOTLINE</div>
-        {view.layers.map((x, index) => (
-          <div
-            key={index}
-            className={`balance-scoop ${status === "done" && view.layers.length < 8 ? "topple" : ""}`}
-            style={{
-              left: `${x}%`,
-              bottom: `${15 + index * 6}%`,
-              background: ["#e5a1ad", "#b8c39b", "#dbc094", "#b6a3cc"][
-                index % 4
-              ],
-              "--layer": index,
-            }}
-          />
-        ))}
-        {(status === "running" || status === "paused") && (
-          <div
-            className="balance-scoop moving-scoop"
-            style={{
-              left: `${view.x}%`,
-              bottom: `${23 + view.layers.length * 6}%`,
-              background: ["#e5a1ad", "#b8c39b", "#dbc094", "#b6a3cc"][
-                view.layers.length % 4
-              ],
-            }}
-          />
-        )}
-        {status === "ready" && (
-          <GameIntro onStart={start}>
-            Wait until the scoop lines up with your stack, then tap Drop or
-            press Space. Stack eight before time runs out.
-          </GameIntro>
-        )}
-        {status === "paused" && (
-          <GameIntro
-            onStart={() => setStatus("running")}
-            label="Back to balancing"
-          >
-            A tiny pause. Your tower is safe.
-          </GameIntro>
-        )}
-        {status === "done" && (
-          <GameResult
-            score={view.score}
-            won={view.layers.length >= 8}
-            onRestart={start}
-          >
-            {view.layers.length >= 8
-              ? "Eight scoops. A very steady hand. Confetti sprinkles are yours."
-              : "Keep each scoop near the centre of the one below. The next tower is yours."}
-          </GameResult>
-        )}
-      </div>
-      <div className="game-instructions">
-        <span>Perfect timing tastes better.</span>
-        <button
-          className="primary-button small"
-          disabled={status !== "running"}
-          onClick={drop}
-        >
-          Drop scoop{" "}
-          <ArrowLeft size={15} style={{ transform: "rotate(-90deg)" }} />
         </button>
       </div>
     </>
@@ -627,18 +439,10 @@ export default function Arcade({
           <span className="eyebrow">
             <span className="section-number">02</span> THE LITTLE ARCADE
           </span>
-          <h2>
-            Play a little.
-            <br />
-            <em>Scoop a lot.</em>
-          </h2>
+          <h2>Pick a game.</h2>
         </div>
         <div>
-          <p>
-            For the plot. For the sprinkles.
-            <br />
-            For that one-more-try feeling.
-          </p>
+          <p>Try a quick round and unlock a topping.</p>
           <span
             className={`arcade-reward-note ${rewardUnlocked ? "unlocked" : ""}`}
           >
@@ -711,7 +515,9 @@ export default function Arcade({
         </div>
         {game === "catch" && <CatchGame {...{ onFinish, chime }} />}
         {game === "match" && <MatchGame {...{ onFinish, chime }} />}
-        {game === "balance" && <BalanceGame {...{ onFinish, chime }} />}
+        {game === "balance" && (
+          <BalanceGame {...{ onFinish, chime, GameIntro, GameResult }} />
+        )}
       </Dialog>
     </section>
   );

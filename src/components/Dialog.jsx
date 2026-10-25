@@ -1,7 +1,12 @@
-import { useEffect, useRef } from "react";
+import { createContext, useContext, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
+
+export const FeatureThemeContext = createContext({
+  worldId: "cozy",
+  reducedMotion: false,
+});
 
 export default function Dialog({
   open,
@@ -11,6 +16,7 @@ export default function Dialog({
   className = "",
 }) {
   const panel = useRef(null);
+  const theme = useContext(FeatureThemeContext);
   useEffect(() => {
     if (!open) return;
     const previous = document.activeElement;
@@ -62,6 +68,8 @@ export default function Dialog({
       {open && (
         <motion.div
           className="dialog-backdrop"
+          data-world={theme.worldId}
+          data-calm={theme.reducedMotion}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}

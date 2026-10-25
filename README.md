@@ -26,16 +26,16 @@ npm run dev
 
 Run `npm test` to verify first-visit behavior with mocked network requests, and `npm run build` to build the site. Tests do not post to Discord.
 
-## The modern Hotline
+## Optional activities in the original site
 
-- **Sundae studio:** a custom Three.js scene with up to six scoops, tap/drag flavour selection, a keyboard-accessible rotation slider, auto-rotation, three containers, and visible toppings. The 3D code loads separately; a CSS illustration is available when WebGL is unavailable.
-- **Scoopie:** an original animated SVG mascot with pointer-following eyes, tap reactions, mood details, scoop reactions, and a dance when optional audio is enabled.
-- **Four worlds:** Strawberry Sunset, Midnight Blueberry, The Matcha Café, and Birthday Everyday change the full site palette, atmosphere, lighting, and optional generated chimes.
-- **Three arcade games:** Scoop & Catch (catch 10 in 20 seconds), Flavour Crush (find all six pairs), and The Balancing Act (stack eight in 30 seconds). Winning any game unlocks a cosmetic confetti topping in the studio.
-- **Saved preferences:** avatar, selected world, favourites, original stamps, up to 30 pretend orders, arcade best scores, and the cosmetic unlock persist in this browser. There is no account or cross-device synchronisation.
-- **Accessibility:** keyboard controls, focus-trapped Escape-dismissable dialogs, a mobile navigation menu, system reduced-motion support, and a manual gentler-animation setting. Sound starts only after an explicit click. The original song remains in the existing DJ control.
+The original opening screen, header, shop layout, menu, personal content, and text receipts are preserved. The new features live in two collapsed cards inside the shop: **3D Sundae Studio** and **Mini Arcade**.
 
-The original fortunes, personal questions, About Mobina, original stamp card, delivery link, and text receipts remain available. This release does not add a Secret Freezer, a new Scoop Passport, radio stations, collectible receipt exports, or multiplayer.
+- The studio has its own six-scoop draft, container/topping controls, rotation, local preview themes, and Scoopie. **Add to my order** adds the draft to the existing order flow. The original menu remains available independently.
+- Theme colours and all activity CSS are scoped to the optional sections and game dialogs. They do not restyle the opening screen or the original menu.
+- Sound effects are optional, short, and event-driven. Enabling effects starts no playback, interval, or ambient loop. The original song and DJ controls remain as originally written.
+- Scoop & Catch, Flavour Match, and The Balancing Act keep saved best scores. Winning a game unlocks a cosmetic confetti topping.
+- The balancing game measures the visible scoop and support widths in pixels. A scoop needs substantial overlap and a stable centre of mass. Each drop visibly falls before a supported landing can score; misses fall out of the arena. A second drop is blocked while one is falling.
+- Avatar, mood, favourites, original stamps, and order history continue to be saved in this browser.
 
 ### Local verification without Discord alerts
 
@@ -47,4 +47,4 @@ This overrides the local webhook only for that development process. The regular 
 
 Check the studio by adding flavours, switching containers, selecting toppings, rotating the model, and placing a pretend order. Refresh and confirm the selected world, favourites, stamp count, and order history remain. Play the games using pointer/touch controls or the on-screen/keyboard controls. Hidden game tabs pause the timed games; memory-game time excludes hidden periods.
 
-`npm test` covers the original notification rules plus scoop capacity, invalid quantities, memory-pair generation, catch collision bounds, balancing score/limits, and profile recovery.
+`npm test` covers notification rules, studio limits, memory pairs, catch collisions, saved profiles, pixel-based support and tower stability, falling trajectories, and idle-audio regressions.

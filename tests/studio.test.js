@@ -2,7 +2,6 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
   addScoop,
-  balanceResult,
   countScoops,
   expandScoops,
   isCaught,
@@ -51,14 +50,6 @@ test("catching requires both horizontal alignment and reaching the cup", () => {
   assert.equal(isCaught({ x: 60, y: 84 }, 50), false);
   assert.equal(isCaught({ x: 50, y: 10 }, 50), false);
   assert.equal(isCaught({ x: 50, y: 95 }, 50), false);
-});
-
-test("balanced drops reward precision, while off-centre scoops topple", () => {
-  assert.equal(balanceResult(0, 2).points, 110);
-  assert.ok(balanceResult(5, 2).points < balanceResult(0, 2).points);
-  assert.equal(balanceResult(26, 2).toppled, false);
-  assert.equal(balanceResult(-27, 2).toppled, true);
-  assert.equal(balanceResult(-27, 2).points, 0);
 });
 
 test("corrupt saved profiles fall back safely and invalid orders are excluded", () => {

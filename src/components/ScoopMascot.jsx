@@ -2,11 +2,11 @@ import { useEffect, useId, useState } from "react";
 import { motion, useMotionValue, useSpring } from "motion/react";
 
 const QUIPS = [
-  "Taste tester. Full-time bestie.",
-  "Your taste? Impeccable.",
-  "Six scoops is a personality trait.",
-  "A little treat is always a good idea.",
-  "I support your sprinkle decisions.",
+  "Official scoop tester.",
+  "Nice combination.",
+  "That’s a serious stack.",
+  "Ready for another flavour?",
+  "Extra sprinkles? Good call.",
 ];
 
 export default function ScoopMascot({
@@ -37,7 +37,7 @@ export default function ScoopMascot({
   useEffect(() => {
     if (scoopCount) {
       setQuip(scoopCount % QUIPS.length);
-      setReaction(flavourName ? `${flavourName}? Excellent taste.` : null);
+      setReaction(flavourName ? `${flavourName}? Solid choice.` : null);
     } else setReaction(null);
   }, [scoopCount, flavourName]);
 
