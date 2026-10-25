@@ -14,7 +14,8 @@ export default function FloatingEmojis() {
         dy: (Math.random() - 0.5) * 200,
         rot: (Math.random() - 0.5) * 360,
         duration: 18 + Math.random() * 20,
-        delay: Math.random() * 18,
+        // Begin mid-drift so every emoji is present on the first frame.
+        delay: -(18 + Math.random() * 20),
         size: 14 + Math.random() * 14,
       })),
     []
@@ -30,7 +31,7 @@ export default function FloatingEmojis() {
             left: `${p.startX}%`,
             top: `${p.startY}%`,
             fontSize: p.size,
-            opacity: 0,
+            opacity: 1,
             "--dx": `${p.dx}px`,
             "--dy": `${p.dy}px`,
             "--rot": `${p.rot}deg`,

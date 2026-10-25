@@ -44,10 +44,8 @@ body {
 }
 
 @keyframes drift {
-  0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); opacity: 0; }
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  50% { transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); }
 }
 
 @keyframes wiggle {
